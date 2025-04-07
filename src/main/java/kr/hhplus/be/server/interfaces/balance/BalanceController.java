@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import kr.hhplus.be.server.application.balance.BalanceUseCase;
 import kr.hhplus.be.server.application.balance.ChargeBalanceCommand;
 import kr.hhplus.be.server.application.balance.BalanceResult;
-import kr.hhplus.be.server.common.dto.response.CustomApiResponse;
+import kr.hhplus.be.server.common.dto.CustomApiResponse;
 
 @RestController
 @RequestMapping("/api/v1/balances")

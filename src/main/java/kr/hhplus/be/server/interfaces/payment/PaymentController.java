@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.interfaces.payment;
 
 import kr.hhplus.be.server.application.payment.*;
-import kr.hhplus.be.server.common.dto.response.CustomApiResponse;
+import kr.hhplus.be.server.common.dto.CustomApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

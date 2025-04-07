@@ -2,7 +2,7 @@ package kr.hhplus.be.server.interfaces.product;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hhplus.be.server.application.product.*;
-import kr.hhplus.be.server.common.dto.response.CustomApiResponse;
+import kr.hhplus.be.server.common.dto.CustomApiResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

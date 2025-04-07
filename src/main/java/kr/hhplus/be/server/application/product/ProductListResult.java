@@ -1,16 +1,17 @@
 package kr.hhplus.be.server.application.product;
 
+import kr.hhplus.be.server.domain.product.Product;
+
 import java.util.List;
 
 public record ProductListResult(
         List<ProductResult> products
 ) {
-    public static ProductListResult from(List<kr.hhplus.be.server.domain.product.Product> products) {
+    public static ProductListResult from(List<Product> productList) {
         return new ProductListResult(
-                products.stream().map(p -> new ProductResult(
-                        p.getId(), p.getName(), p.getPrice().value(), p.getStock(),
-                        p.getReleaseDate(), p.getImageUrl(), p.getCreatedAt(), p.getUpdatedAt()
-                )).toList()
+                productList.stream()
+                        .map(ProductResult::from)
+                        .toList()
         );
     }
 }

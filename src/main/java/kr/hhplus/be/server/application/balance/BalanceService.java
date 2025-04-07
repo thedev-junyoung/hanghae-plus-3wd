@@ -1,9 +1,9 @@
 package kr.hhplus.be.server.application.balance;
 
 import kr.hhplus.be.server.common.vo.Money;
-import kr.hhplus.be.server.domain.BalanceNotFoundException;
 import kr.hhplus.be.server.domain.balance.Balance;
 import kr.hhplus.be.server.domain.balance.BalanceRepository;
+import kr.hhplus.be.server.domain.balance.exception.BalanceNotFoundException;
 import kr.hhplus.be.server.infrastructure.balance.BalanceEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

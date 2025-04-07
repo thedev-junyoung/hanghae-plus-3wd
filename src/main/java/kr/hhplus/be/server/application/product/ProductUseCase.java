@@ -23,4 +23,5 @@ public interface ProductUseCase {
      * 상품 재고 차감
      */
     boolean decreaseStock(DecreaseStockCommand command);
+
 }

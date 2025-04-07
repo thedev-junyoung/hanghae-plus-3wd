@@ -3,7 +3,6 @@ package kr.hhplus.be.server.application.product;
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductRepository;
 import kr.hhplus.be.server.domain.product.exception.ProductNotFoundException;
-import kr.hhplus.be.server.infrastructure.product.ProductEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

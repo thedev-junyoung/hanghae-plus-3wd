@@ -30,11 +30,10 @@ public class PaymentService {
         paymentRepository.save(payment);
     }
 
-    public void process(RequestPaymentCommand command, Order order, Payment payment) {
+    public boolean process(RequestPaymentCommand command, Order order, Payment payment) {
         PaymentProcessor processor = resolveProcessor(command.method());
-        processor.process(command, order, payment);
+        return processor.process(command, order, payment);
     }
-
 
     private PaymentProcessor resolveProcessor(String method) {
         if ("BALANCE".equalsIgnoreCase(method)) {
@@ -45,15 +44,12 @@ public class PaymentService {
 
     public Payment getByPgTraansactionId(String pgTransactionId) {
         return paymentRepository.findByPgTransactionId(pgTransactionId)
-                .map(payment ->
-                        Payment.initiate(
-                                payment.getOrderId(),
-                                Money.wons(payment.getAmount().value()),
-                                payment.getMethod(
-                        )
+                .map(payment -> Payment.initiate(
+                        payment.getOrderId(),
+                        Money.wons(payment.getAmount().value()),
+                        payment.getMethod()
                 ))
                 .orElseThrow(() -> new IllegalArgumentException("결제 정보가 없습니다."));
     }
-
-
 }
+

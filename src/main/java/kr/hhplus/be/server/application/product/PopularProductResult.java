@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.application.product;
 
 import kr.hhplus.be.server.domain.product.Product;
-import kr.hhplus.be.server.infrastructure.product.ProductEntity;
 
 import java.math.BigDecimal;
 
@@ -20,12 +19,4 @@ public record PopularProductResult(
         );
     }
 
-    public static PopularProductResult from(ProductEntity entity) {
-        return new PopularProductResult(
-                entity.getId(),
-                entity.getName(),
-                entity.getPrice(),
-                entity.getSalesCount()
-        );
-    }
 }

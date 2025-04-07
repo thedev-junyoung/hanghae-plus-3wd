@@ -35,4 +35,11 @@ public class Order {
         }
         this.status = OrderStatus.CANCELLED;
     }
+
+    public void markConfirmed() {
+        if (status != OrderStatus.CREATED) {
+            throw new IllegalStateException("Only CREATED orders can be confirmed.");
+        }
+        this.status = OrderStatus.CONFIRMED;
+    }
 }

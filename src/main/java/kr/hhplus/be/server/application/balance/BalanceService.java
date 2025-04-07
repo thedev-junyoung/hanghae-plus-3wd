@@ -18,33 +18,31 @@ public class BalanceService implements BalanceUseCase {
 
     @Override
     public BalanceResult charge(ChargeBalanceCommand command) {
-        BalanceEntity entity = balanceRepository.findByUserId(command.userId())
+        Balance balance = balanceRepository.findByUserId(command.userId())
                 .orElseThrow(() -> new BalanceNotFoundException(command.userId()));
 
-        Balance domain = entity.toDomain();
-        domain.charge(Money.wons(command.amount()));
+        balance.charge(Money.wons(command.amount()));
 
-        BalanceEntity updated = balanceRepository.save(BalanceEntity.from(domain));
-        return BalanceResult.from(updated.toDomain());
+        Balance updated = balanceRepository.save(balance);
+        return BalanceResult.from(balance);
     }
 
     @Override
     public BalanceResult getBalance(Long userId) {
-        BalanceEntity entity = balanceRepository.findByUserId(userId)
+        Balance balance = balanceRepository.findByUserId(userId)
                 .orElseThrow(() -> new BalanceNotFoundException(userId));
 
-        return BalanceResult.from(entity.toDomain());
+        return BalanceResult.from(balance);
     }
 
     @Override
     public boolean decreaseBalance(DecreaseBalanceCommand command) {
-        BalanceEntity entity = balanceRepository.findByUserId(command.userId())
+        Balance balance = balanceRepository.findByUserId(command.userId())
                 .orElseThrow(() -> new BalanceNotFoundException(command.userId()));
 
-        Balance domain = entity.toDomain();
-        domain.decrease(Money.wons(command.amount()));
+        balance.decrease(Money.wons(command.amount()));
 
-        balanceRepository.save(BalanceEntity.from(domain));
+        balanceRepository.save(balance);
 
         return true;
     }

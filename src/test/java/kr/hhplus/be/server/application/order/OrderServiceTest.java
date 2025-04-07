@@ -5,7 +5,6 @@ import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.order.OrderRepository;
 import kr.hhplus.be.server.domain.order.OrderStatus;
-import kr.hhplus.be.server.infrastructure.order.OrderEntity;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -46,6 +45,6 @@ class OrderServiceTest {
         assertThat(order.getTotalAmount()).isEqualTo(totalAmount);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CREATED);
 
-        verify(orderRepository).save(any(OrderEntity.class));
+        verify(orderRepository).save(any(Order.class));
     }
 }

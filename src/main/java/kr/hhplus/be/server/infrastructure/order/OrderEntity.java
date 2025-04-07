@@ -40,6 +40,15 @@ public class OrderEntity {
         return entity;
     }
 
+    public static Order toDamain(OrderEntity order) {
+        return Order.create(
+                order.id,
+                order.userId,
+                null, // OrderItem은 별도로 처리해야 하므로 null로 설정
+                Money.wons(order.totalAmount)
+        );
+    }
+
     public Order toDomain(List<OrderItem> orderItems) {
         return Order.create(
                 id,

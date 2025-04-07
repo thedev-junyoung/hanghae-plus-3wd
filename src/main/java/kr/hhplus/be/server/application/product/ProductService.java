@@ -17,9 +17,8 @@ public class ProductService implements ProductUseCase {
 
     @Override
     public ProductListResult getProductList(GetProductListCommand command) {
-        List<ProductEntity> entities = productRepository.findAll(); // TODO: 페이징 정렬 필요 시 확장
-        List<Product> domainProducts = entities.stream()
-                .map(ProductEntity::toDomain)
+        List<Product> products = productRepository.findAll(); // TODO: 페이징 정렬 필요 시 확장
+        List<Product> domainProducts = products .stream()
                 .toList();
 
         return ProductListResult.from(domainProducts);
@@ -27,28 +26,26 @@ public class ProductService implements ProductUseCase {
 
     @Override
     public ProductDetailResult getProductDetail(GetProductDetailCommand command) {
-        ProductEntity entity = productRepository.findById(command.productId())
+        Product product = productRepository.findById(command.productId())
                 .orElseThrow(() -> new ProductNotFoundException(command.productId()));
-        return ProductDetailResult.from(entity.toDomain());
+        return ProductDetailResult.from(product);
     }
 
     @Override
     public List<PopularProductResult> getPopularProducts() {
         return productRepository.findTopSellingProducts().stream()
-                .map(ProductEntity::toDomain)
                 .map(PopularProductResult::from)
                 .toList();
     }
 
     @Override
     public boolean decreaseStock(DecreaseStockCommand command) {
-        ProductEntity entity = productRepository.findById(command.productId())
+        Product product = productRepository.findById(command.productId())
                 .orElseThrow(() -> new ProductNotFoundException(command.productId()));
 
-        Product domain = entity.toDomain();
-        domain.decreaseStock(command.quantity());
+        product.decreaseStock(command.quantity());
 
-        productRepository.save(ProductEntity.from(domain));
+        productRepository.save(product);
         return true;
     }
 }

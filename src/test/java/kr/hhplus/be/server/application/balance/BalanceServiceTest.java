@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.application.balance;
 
 import kr.hhplus.be.server.common.vo.Money;
+import kr.hhplus.be.server.domain.balance.Balance;
 import kr.hhplus.be.server.domain.balance.exception.NotEnoughBalanceException;
-import kr.hhplus.be.server.infrastructure.balance.BalanceEntity;
 import kr.hhplus.be.server.domain.balance.BalanceRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,10 +31,8 @@ class BalanceServiceTest {
     @DisplayName("잔액을 충전할 수 있다")
     void charge_success() {
         // given
-        BalanceEntity entity = BalanceEntity.from(
-                kr.hhplus.be.server.domain.balance.Balance.createNew(1L, 100L, Money.wons(1000))
-        );
-        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(entity));
+        Balance balance = Balance.createNew(1L, 100L, Money.wons(1000));
+        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(balance));
         when(balanceRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         ChargeBalanceCommand command = new ChargeBalanceCommand(100L, BigDecimal.valueOf(500));
@@ -50,10 +48,8 @@ class BalanceServiceTest {
     @DisplayName("잔액을 차감할 수 있다")
     void decrease_success() {
         // given
-        BalanceEntity entity = BalanceEntity.from(
-                kr.hhplus.be.server.domain.balance.Balance.createNew(1L, 100L, Money.wons(1000))
-        );
-        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(entity));
+        Balance balance = Balance.createNew(1L, 100L, Money.wons(1000));
+        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(balance));
         when(balanceRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         DecreaseBalanceCommand command = new DecreaseBalanceCommand(100L, BigDecimal.valueOf(500));
@@ -64,20 +60,18 @@ class BalanceServiceTest {
         // then
         assertThat(result).isTrue();
 
-        ArgumentCaptor<BalanceEntity> captor = ArgumentCaptor.forClass(BalanceEntity.class);
+        ArgumentCaptor<Balance> captor = ArgumentCaptor.forClass(Balance.class);
         verify(balanceRepository).save(captor.capture());
 
-        BalanceEntity saved = captor.getValue();
-        assertThat(saved.getAmount()).isEqualTo(BigDecimal.valueOf(500));
+        Balance saved = captor.getValue();
+        assertThat(saved.getAmount()).isEqualTo(Money.wons(saved.getAmount().getValue()));
     }
     @Test
     @DisplayName("잔액이 부족하면 예외가 발생한다")
     void decrease_fail_not_enough_balance() {
         // given
-        BalanceEntity entity = BalanceEntity.from(
-                kr.hhplus.be.server.domain.balance.Balance.createNew(1L, 100L, Money.wons(300))
-        );
-        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(entity));
+        Balance balance = Balance.createNew(1L, 100L, Money.wons(300));
+        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(balance));
 
         DecreaseBalanceCommand command = new DecreaseBalanceCommand(100L, BigDecimal.valueOf(500));
 

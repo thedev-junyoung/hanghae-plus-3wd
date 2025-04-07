@@ -35,7 +35,7 @@ class ProductServiceTest {
         // given
         Product product = Product.create(1L, "Jordan 1", "Nike", Money.wons(200_000), 10,
                 LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
-        when(productRepository.findAll()).thenReturn(List.of(ProductEntity.from(product)));
+        when(productRepository.findAll()).thenReturn(List.of(product));
 
         // when
         ProductListResult result = productService.getProductList(new GetProductListCommand(0, 10, null));
@@ -51,7 +51,7 @@ class ProductServiceTest {
         // given
         Product product = Product.create(1L, "Jordan 1", "Nike", Money.wons(200_000), 10,
                 LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
-        when(productRepository.findById(1L)).thenReturn(Optional.of(ProductEntity.from(product)));
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         // when
         ProductDetailResult result = productService.getProductDetail(new GetProductDetailCommand(1L));
@@ -77,7 +77,7 @@ class ProductServiceTest {
         // given
         Product product = Product.create(1L, "Jordan 1", "Nike", Money.wons(200_000), 10,
                 LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
-        when(productRepository.findById(1L)).thenReturn(Optional.of(ProductEntity.from(product)));
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         // when
         boolean result = productService.decreaseStock(new DecreaseStockCommand(1L, 3));
@@ -93,7 +93,7 @@ class ProductServiceTest {
         // given
         Product product = Product.create(1L, "Jordan 1", "Nike", Money.wons(200_000), 1,
                 LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
-        when(productRepository.findById(1L)).thenReturn(Optional.of(ProductEntity.from(product)));
+        when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         // when & then
         assertThatThrownBy(() -> productService.decreaseStock(new DecreaseStockCommand(1L, 5)))

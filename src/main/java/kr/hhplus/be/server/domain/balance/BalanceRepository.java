@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface BalanceRepository extends JpaRepository<BalanceEntity, Long> {
-    Optional<BalanceEntity> findByUserId(Long userId);
+public interface BalanceRepository{
+    Balance save(Balance balance);
+    Optional<Balance> findByUserId(Long userId);
 }

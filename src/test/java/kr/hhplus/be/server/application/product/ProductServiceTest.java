@@ -83,7 +83,9 @@ class ProductServiceTest {
 
         // then
         assertThat(result).isTrue();
-        verify(productRepository).save(any());
+        verify(productRepository).save(argThat(p ->
+                product.getStock() == 7
+        ));
     }
 
     @Test

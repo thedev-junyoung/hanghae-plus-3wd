@@ -7,7 +7,6 @@ import kr.hhplus.be.server.domain.balance.BalanceRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -59,13 +58,9 @@ class BalanceServiceTest {
 
         // then
         assertThat(result).isTrue();
-
-        ArgumentCaptor<Balance> captor = ArgumentCaptor.forClass(Balance.class);
-        verify(balanceRepository).save(captor.capture());
-
-        Balance saved = captor.getValue();
-        assertThat(saved.getAmount()).isEqualTo(Money.wons(saved.getAmount().getValue()));
+        assertThat(balance.getAmount()).isEqualTo(Money.wons(500));
     }
+
     @Test
     @DisplayName("잔액이 부족하면 예외가 발생한다")
     void decrease_fail_not_enough_balance() {

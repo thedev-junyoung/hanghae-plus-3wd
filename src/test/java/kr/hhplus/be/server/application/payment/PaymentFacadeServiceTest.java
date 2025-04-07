@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 class PaymentFacadeServiceTest {
@@ -48,6 +49,9 @@ class PaymentFacadeServiceTest {
         Payment mockPayment = Payment.initiate("order-123", Money.wons(50000), "BALANCE");
         when(paymentService.initiate(any(), any(), any())).thenReturn(mockPayment);
 
+        // ✅ 먼저 설정
+        when(paymentService.process(any(), any(), any())).thenReturn(true);
+
         // When
         PaymentResult result = paymentFacadeService.requestPayment(command);
 
@@ -57,6 +61,8 @@ class PaymentFacadeServiceTest {
         assertThat(result.method()).isEqualTo("BALANCE");
 
         verify(paymentService).process(eq(command), eq(mockOrder), eq(mockPayment));
+        verify(paymentService).markSuccess(mockPayment);
+        verify(orderService).markConfirmed(mockOrder);
     }
 
     @Test
@@ -77,6 +83,7 @@ class PaymentFacadeServiceTest {
 
         // When
         PaymentResult result = paymentFacadeService.confirmPayment(new ConfirmPaymentCommand("pg-123"));
+        when(paymentService.process(any(), any(), any())).thenReturn(true);
 
         // Then
         assertThat(result.status()).isEqualTo(PaymentStatus.SUCCESS);
@@ -100,4 +107,26 @@ class PaymentFacadeServiceTest {
         verify(paymentService, never()).markSuccess(any());
         verify(orderService, never()).markConfirmed(any());
     }
+    @Test
+    @DisplayName("잔액 부족 등으로 결제 실패 시 예외 발생")
+    void requestPayment_fail_whenBalanceInsufficient() {
+        // Given
+        RequestPaymentCommand command = new RequestPaymentCommand("order-999", 1L, "BALANCE");
+
+        Order order = mock(Order.class);
+        when(orderService.getOrderForPayment("order-999")).thenReturn(order);
+        when(order.getTotalAmount()).thenReturn(Money.wons(30000));
+
+        Payment payment = Payment.initiate("order-999", Money.wons(30000), "BALANCE");
+        when(paymentService.initiate(any(), any(), any())).thenReturn(payment);
+        when(paymentService.process(any(), any(), any())).thenReturn(false);
+
+        // When & Then
+        assertThatThrownBy(() -> paymentFacadeService.requestPayment(command))
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessageContaining("잔액이 부족");
+
+        verify(paymentService).markFailure(payment);
+    }
+
 }

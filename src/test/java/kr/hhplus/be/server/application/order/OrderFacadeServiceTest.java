@@ -68,6 +68,8 @@ class OrderFacadeServiceTest {
 
         verify(productService, times(2)).decreaseStock(any());
         verify(orderService).createOrder(eq(100L), any(), eq(Money.wons(320000)));
+        verify(balanceService).decreaseBalance(any());
+
     }
     @Test
     @DisplayName("재고 부족 시 주문 생성 실패")

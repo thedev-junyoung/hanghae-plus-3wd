@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.application.order;
 
+import org.springframework.transaction.annotation.Transactional; // ✅ 정답
 import kr.hhplus.be.server.application.balance.BalanceService;
+import kr.hhplus.be.server.application.balance.DecreaseBalanceCommand;
 import kr.hhplus.be.server.application.product.DecreaseStockCommand;
 import kr.hhplus.be.server.application.product.GetProductDetailCommand;
 import kr.hhplus.be.server.application.product.ProductDetailResult;
@@ -22,6 +24,7 @@ public class OrderFacadeService implements OrderUseCase {
     private final BalanceService balanceService;
     private final OrderService orderService;
 
+    @Transactional
     @Override
     public OrderResult createOrder(CreateOrderCommand command) {
         Money total = Money.wons(0L);
@@ -42,7 +45,9 @@ public class OrderFacadeService implements OrderUseCase {
             orderItems.add(OrderItem.of(item.productId(), item.quantity(), item.size(), itemPrice));
             total = total.add(itemTotal);
         }
-
+        balanceService.decreaseBalance(
+                new DecreaseBalanceCommand(command.userId(), total.value())
+        );
         Order order = orderService.createOrder(command.userId(), orderItems, total);
 
         return OrderResult.from(order);

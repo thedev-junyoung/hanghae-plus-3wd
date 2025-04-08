@@ -30,10 +30,12 @@ public enum ErrorCode {
     // 주문 관련 에러
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND,  "주문을 찾을 수 없습니다."),
     INVALID_ORDER_STATUS(HttpStatus.UNPROCESSABLE_ENTITY,  "유효하지 않은 주문 상태입니다."),
+
     // 잔액 관련 에러
     INSUFFICIENT_BALANCE(HttpStatus.UNPROCESSABLE_ENTITY,  "잔액이 부족합니다."),
     INVALID_AMOUNT(HttpStatus.BAD_REQUEST,  "유효하지 않은 금액입니다."),
     BALANCE_UPDATE_FAILED(HttpStatus.CONFLICT,  "잔액 업데이트에 실패했습니다."),
+    BALANCE_NOT_FOUND(HttpStatus.NOT_FOUND,  "잔액 정보를 찾을 수 없습니다."),
 
     // 쿠폰 관련 에러
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND,  "쿠폰을 찾을 수 없습니다."),

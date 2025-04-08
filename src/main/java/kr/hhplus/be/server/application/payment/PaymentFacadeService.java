@@ -2,12 +2,15 @@ package kr.hhplus.be.server.application.payment;
 
 import kr.hhplus.be.server.application.balance.BalanceService;
 import kr.hhplus.be.server.application.order.OrderService;
+import kr.hhplus.be.server.application.orderexport.OrderExportCommand;
+import kr.hhplus.be.server.application.orderexport.OrderExportService;
 import kr.hhplus.be.server.application.productstatistics.ProductStatisticsService;
 import kr.hhplus.be.server.application.productstatistics.RecordSalesCommand;
 import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
+import kr.hhplus.be.server.domain.orderexport.OrderExportPayload;
+import kr.hhplus.be.server.domain.payment.ExternalPaymentGateway;
 import kr.hhplus.be.server.domain.payment.Payment;
-import kr.hhplus.be.server.infrastructure.payment.ExternalPaymentGateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +18,12 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PaymentFacadeService implements PaymentUseCase {
 
-    private final PaymentService paymentService; // 내부 로직 담당 서비스
+    private final PaymentService paymentService;
     private final OrderService orderService;
     private final BalanceService balanceService;
     private final ExternalPaymentGateway externalGateway;
     private final ProductStatisticsService productStatisticsService;
-
+    private final OrderExportService orderExportService;
 
     @Override
     public PaymentResult requestPayment(RequestPaymentCommand command) {
@@ -29,7 +32,14 @@ public class PaymentFacadeService implements PaymentUseCase {
 
         Payment payment = paymentService.initiate(command.orderId(), amount, command.method());
 
-        // 결제 요청
+        // 실제 외부 결제 요청
+        boolean paymentRequested = externalGateway.requestPayment(command.orderId());
+        if (!paymentRequested) {
+            paymentService.markFailure(payment);
+            throw new RuntimeException("외부 결제 요청 실패");
+        }
+
+        // 잔액 차감 등 내부 처리
         paymentService.process(command, order, payment);
 
         // 통계 처리
@@ -43,32 +53,34 @@ public class PaymentFacadeService implements PaymentUseCase {
                 )
         );
 
+        // 외부 주문 전송
+        orderExportService.export(
+                new OrderExportCommand(OrderExportPayload.from(order))
+        );
+
         return PaymentResult.from(payment);
     }
 
     @Override
     public PaymentResult confirmPayment(ConfirmPaymentCommand command) {
-        // 1. 결제 엔티티 조회
         Payment payment = paymentService.getByPgTraansactionId(command.pgTransactionId());
 
-        // 2. 이미 완료된 경우 예외 방지
         if (payment.isCompleted()) {
             return PaymentResult.from(payment);
         }
 
-        // 3. 결제 성공 처리
+        // 외부 결제 시스템 확인
+        boolean confirmed = externalGateway.confirmPayment(command.pgTransactionId());
+        if (!confirmed) {
+            paymentService.markFailure(payment);
+            throw new RuntimeException("외부 결제 확인 실패");
+        }
+
         paymentService.markSuccess(payment);
 
-        // 4. 주문 상태도 CONFIRMED 로 변경
         Order order = orderService.getOrderForPayment(payment.getOrderId());
         orderService.markConfirmed(order);
 
-        // 실제 운영 시에는 여기서 결제완료 처리, 잔액 차감, 통계 처리 등을 진행합니다.
-
         return PaymentResult.from(payment);
     }
-
-
-
 }
-

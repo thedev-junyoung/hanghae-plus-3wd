@@ -2,14 +2,15 @@ package kr.hhplus.be.server.application.payment;
 
 import kr.hhplus.be.server.application.balance.BalanceService;
 import kr.hhplus.be.server.application.order.OrderService;
+import kr.hhplus.be.server.application.orderexport.OrderExportService;
 import kr.hhplus.be.server.application.productstatistics.ProductStatisticsService;
 import kr.hhplus.be.server.application.productstatistics.RecordSalesCommand;
 import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
+import kr.hhplus.be.server.domain.payment.ExternalPaymentGateway;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.payment.PaymentStatus;
-import kr.hhplus.be.server.infrastructure.payment.ExternalPaymentGateway;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,7 @@ class PaymentFacadeServiceTest {
     private BalanceService balanceService;
     private ExternalPaymentGateway externalGateway;
     private ProductStatisticsService productStatisticsService;
+    private OrderExportService orderExportService;
 
     private PaymentFacadeService paymentFacadeService;
 
@@ -37,9 +39,11 @@ class PaymentFacadeServiceTest {
         balanceService = mock(BalanceService.class);
         externalGateway = mock(ExternalPaymentGateway.class);
         productStatisticsService = mock(ProductStatisticsService.class);
+        orderExportService = mock(OrderExportService.class);
 
         paymentFacadeService = new PaymentFacadeService(
-                paymentService, orderService, balanceService, externalGateway, productStatisticsService
+                paymentService, orderService, balanceService,
+                externalGateway, productStatisticsService, orderExportService
         );
     }
 
@@ -70,6 +74,8 @@ class PaymentFacadeServiceTest {
         verify(productStatisticsService).record(
                 new RecordSalesCommand(1L, 2, 20000L)
         );
+        verify(orderExportService).export(any());
+        verify(externalGateway, atMostOnce()).requestPayment("order-123");
     }
 
     @Test
@@ -94,6 +100,7 @@ class PaymentFacadeServiceTest {
         assertThat(result.status()).isEqualTo(PaymentStatus.SUCCESS);
         verify(paymentService).markSuccess(payment);
         verify(orderService).markConfirmed(order);
+        verify(externalGateway, atMostOnce()).confirmPayment("pg-123");
     }
 
     @Test
@@ -114,5 +121,6 @@ class PaymentFacadeServiceTest {
         assertThat(result.status()).isEqualTo(PaymentStatus.SUCCESS);
         verify(paymentService, never()).markSuccess(payment);
         verify(orderService, never()).markConfirmed(order);
+        verify(externalGateway, never()).confirmPayment("pg-already");
     }
 }

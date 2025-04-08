@@ -28,7 +28,7 @@ public class CouponController implements CouponAPI {
 
     @Override
     public ResponseEntity<CustomApiResponse<Response>> limitedIssueCoupon(@Valid @RequestBody Request request) {
-        IssueLimitedCouponCommand command = new IssueLimitedCouponCommand(request.getUserId(), request.getCouponCode());
+        IssueLimitedCouponCommand command = request.toCommand();
 
         CouponResult result = couponUseCase.issueLimitedCoupon(command);
 
@@ -39,7 +39,6 @@ public class CouponController implements CouponAPI {
     }
 
     // --- Nested DTO ---
-    @Getter
     @NoArgsConstructor
     public static class Request {
         @NotNull
@@ -47,6 +46,11 @@ public class CouponController implements CouponAPI {
 
         @NotBlank
         private String couponCode;
+
+        public IssueLimitedCouponCommand toCommand() {
+            return new IssueLimitedCouponCommand(userId, couponCode);
+        }
+
     }
 
     @Getter

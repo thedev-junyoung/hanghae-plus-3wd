@@ -1,9 +1,10 @@
+
 ## 1. Domain & VO Layer
 > 도메인 모델(Aggregate)과 값 객체(Value Object) 간의 연결 구조를 중심으로 표현합니다.
 
 ```mermaid
 classDiagram
-    %% 사용자
+%% 사용자
     class User {
         -id: UserId
         -name: String
@@ -14,7 +15,7 @@ classDiagram
         -description: String
     }
 
-    %% 주문
+%% 주문
     class Order {
         -id: OrderId
         -userId: UserId
@@ -40,7 +41,7 @@ classDiagram
     OrderItem --> Quantity
     OrderItem --> Money
 
-    %% 결제
+%% 결제
     class Payment {
         -id: PaymentId
         -orderId: OrderId
@@ -55,7 +56,7 @@ classDiagram
     }
     Payment --> Money
 
-    %% 상품
+%% 상품
     class Product {
         -id: ProductId
         -name: ProductName
@@ -67,7 +68,7 @@ classDiagram
     Product --> Stock
     Stock --> Quantity
 
-    %% 잔액
+%% 잔액
     class Balance {
         -id: BalanceId
         -userId: UserId
@@ -76,7 +77,7 @@ classDiagram
     }
     Balance --> Money
 
-    %% 쿠폰
+%% 쿠폰
     class Coupon {
         -id: CouponId
         -issuerId: UserId
@@ -90,29 +91,39 @@ classDiagram
     }
     Coupon --> Money
 
-    %% 값 객체들
+%% 쿠폰 이력
+    class CouponUsageHistory {
+        -id: Long
+        -userCouponId: Long
+        -action: String
+        -actionTime: LocalDateTime
+    }
+    CouponUsageHistory --> Coupon
+
+%% 값 객체들
     class Money {
-        <<Value Object>>
-        -amount: BigDecimal
-        -currency: Currency
+<<Value Object>>
+-amount: BigDecimal
+-currency: Currency
+}
+
+class Quantity {
+<<Value Object>>
+-value: int
     }
 
-    class Quantity {
-        <<Value Object>>
-        -value: int
+class Stock {
+<<Value Object>>
+-quantity: Quantity
     }
 
-    class Stock {
-        <<Value Object>>
-        -quantity: Quantity
-    }
-
-    %% 관계 정의
-    Order --> Coupon
-    Order --> User
-    Payment --> Order
-    Balance --> User
-    Coupon --> User
-    Coupon --> User : issuerId
-    OrderItem --> Product
+%% 관계 정의
+Order --> Coupon
+Order --> User
+Payment --> Order
+Balance --> User
+Coupon --> User
+Coupon --> User : issuerId
+OrderItem --> Product
+User --> CouponUsageHistory
 ```

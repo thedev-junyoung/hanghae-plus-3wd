@@ -46,7 +46,7 @@ class PaymentFacadeServiceTest {
         when(mockOrder.getTotalAmount()).thenReturn(Money.wons(50000));
 
         Payment mockPayment = Payment.initiate("order-123", Money.wons(50000), "BALANCE");
-        when(paymentService.initiate(any(), any(), any())).thenReturn(mockPayment);
+        when(paymentService.initiate("order-123", Money.wons(50000), "BALANCE")).thenReturn(mockPayment);
 
         // When
         PaymentResult result = paymentFacadeService.requestPayment(command);
@@ -56,7 +56,7 @@ class PaymentFacadeServiceTest {
         assertThat(result.amount()).isEqualTo(BigDecimal.valueOf(50000));
         assertThat(result.method()).isEqualTo("BALANCE");
 
-        verify(paymentService).process(eq(command), eq(mockOrder), eq(mockPayment));
+        verify(paymentService).process(command, mockOrder, mockPayment);
     }
 
     @Test
@@ -83,21 +83,25 @@ class PaymentFacadeServiceTest {
         verify(paymentService).markSuccess(payment);
         verify(orderService).markConfirmed(order);
     }
+
     @Test
     @DisplayName("이미 완료된 결제는 재확인하지 않음")
     void confirmPayment_alreadyCompleted() {
         // Given
         Payment payment = Payment.initiate("order-2002", Money.wons(50000), "BALANCE");
+        Order order = mock(Order.class);
         payment.complete(); // 이미 완료
 
         when(paymentService.getByPgTraansactionId("pg-already")).thenReturn(payment);
+        when(orderService.getOrderForPayment("order-2002")).thenReturn(order);/**/
 
         // When
         PaymentResult result = paymentFacadeService.confirmPayment(new ConfirmPaymentCommand("pg-already"));
 
         // Then
         assertThat(result.status()).isEqualTo(PaymentStatus.SUCCESS);
-        verify(paymentService, never()).markSuccess(any());
-        verify(orderService, never()).markConfirmed(any());
+        verify(paymentService, never()).markSuccess(payment);
+        verify(orderService, never()).markConfirmed(order);
     }
+
 }

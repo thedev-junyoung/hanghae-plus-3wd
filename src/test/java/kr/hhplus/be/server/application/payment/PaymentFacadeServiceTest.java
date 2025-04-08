@@ -62,6 +62,8 @@ class PaymentFacadeServiceTest {
         Payment mockPayment = Payment.initiate("order-123", Money.wons(20000), "BALANCE");
         when(paymentService.initiate("order-123", Money.wons(20000), "BALANCE")).thenReturn(mockPayment);
 
+        when(externalGateway.requestPayment("order-123")).thenReturn(true);
+
         // When
         PaymentResult result = paymentFacadeService.requestPayment(command);
 
@@ -86,6 +88,9 @@ class PaymentFacadeServiceTest {
         when(paymentService.getByPgTraansactionId("pg-123")).thenReturn(payment);
 
         Order order = mock(Order.class);
+
+        when(externalGateway.confirmPayment("pg-123")).thenReturn(true);
+
         when(orderService.getOrderForPayment("order-1001")).thenReturn(order);
 
         doAnswer(invocation -> {

@@ -4,6 +4,7 @@ import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.payment.PaymentRepository;
+import kr.hhplus.be.server.domain.payment.exception.UnsupportedPaymentMethodException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -98,7 +99,7 @@ class PaymentServiceTest {
 
         // then
         assertThatThrownBy(() -> paymentService.process(command, mockOrder, payment))
-                .isInstanceOf(UnsupportedOperationException.class)
+                .isInstanceOf(UnsupportedPaymentMethodException.class)
                 .hasMessageContaining("지원되지 않는 결제 수단");
 
         verify(balancePaymentProcessor, never()).process(command, mockOrder, payment);    }

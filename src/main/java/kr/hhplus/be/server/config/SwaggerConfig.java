@@ -17,8 +17,8 @@ public class SwaggerConfig {
     @Bean
     public OpenAPI openAPI() {
         Info info = new Info()
-                .title("E-Commerce Order Service API")
-                .description("E-Commerce 상품 주문 서비스 API 명세서")
+                .title("스니커즈 E-Commerce API")
+                .description("스니커즈 E-Commerce API 명세서")
                 .version("v1.0.0");
 
         // JWT 인증 스키마 설정

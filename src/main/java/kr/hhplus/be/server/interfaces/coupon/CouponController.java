@@ -8,6 +8,7 @@ import kr.hhplus.be.server.application.coupon.CouponResult;
 import kr.hhplus.be.server.application.coupon.CouponUseCase;
 import kr.hhplus.be.server.application.coupon.IssueLimitedCouponCommand;
 import kr.hhplus.be.server.common.dto.CustomApiResponse;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
@@ -40,6 +41,7 @@ public class CouponController implements CouponAPI {
 
     // --- Nested DTO ---
     @NoArgsConstructor
+    @AllArgsConstructor
     public static class Request {
         @NotNull
         private Long userId;

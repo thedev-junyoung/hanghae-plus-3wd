@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.infrastructure.order;
 
-import kr.hhplus.be.server.domain.order_event.OrderEvent;
-import kr.hhplus.be.server.domain.order_event.OrderEventRepository;
+import kr.hhplus.be.server.domain.outbox.OrderEvent;
+import kr.hhplus.be.server.domain.outbox.OrderEventRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

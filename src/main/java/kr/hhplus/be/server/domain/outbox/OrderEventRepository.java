@@ -1,6 +1,4 @@
-package kr.hhplus.be.server.domain.order_event;
-
-import org.springframework.stereotype.Repository;
+package kr.hhplus.be.server.domain.outbox;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.order_event;
+package kr.hhplus.be.server.domain.outbox;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

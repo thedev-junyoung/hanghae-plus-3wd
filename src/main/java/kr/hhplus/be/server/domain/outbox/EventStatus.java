@@ -1,4 +1,4 @@
-package kr.hhplus.be.server.domain.order_event;
+package kr.hhplus.be.server.domain.outbox;
 
 public enum EventStatus {
     PENDING,

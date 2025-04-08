@@ -25,6 +25,8 @@ public class ProductEntity {
 
     private BigDecimal price;
 
+    private int size;
+
     private int stock;
 
     private LocalDate releaseDate;
@@ -48,6 +50,7 @@ public class ProductEntity {
                 name,
                 brand,
                 Money.wons(price),
+                size,
                 stock,
                 releaseDate,
                 imageUrl,

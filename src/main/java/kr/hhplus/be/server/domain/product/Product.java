@@ -20,6 +20,7 @@ public class Product {
     private final String name;
     private final String brand;
     private Money price;
+    private int size;
     private int stock;
     private final LocalDate releaseDate;
     private final String imageUrl;
@@ -28,10 +29,10 @@ public class Product {
     private final LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
-    public static Product create(Long id, String name, String brand, Money price, int stock,
+    public static Product create(Long id, String name, String brand, Money price, int size, int stock,
                                  LocalDate releaseDate, String imageUrl, String description) {
         LocalDateTime now = LocalDateTime.now();
-        return new Product(id, name, brand, price, stock, releaseDate, imageUrl, description, now, now);
+        return new Product(id, name, brand, price, size, stock, releaseDate, imageUrl, description, now, now);
     }
 
     public void decreaseStock(int quantity) {

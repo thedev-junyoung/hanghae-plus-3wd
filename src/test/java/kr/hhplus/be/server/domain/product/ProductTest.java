@@ -17,7 +17,7 @@ class ProductTest {
     @DisplayName("재고 차감에 성공한다")
     void decreaseStock_success() {
         // given
-        Product product = Product.create(1L, "Nike", "Nike", Money.wons(100000), 10,
+        Product product = Product.create(1L, "Nike", "Nike", Money.wons(100000),260, 10,
                 LocalDate.now(), "/img.jpg", "Good shoes");
 
         // when
@@ -31,7 +31,7 @@ class ProductTest {
     @DisplayName("재고 부족 시 예외가 발생한다")
     void decreaseStock_fail_insufficient() {
         // given
-        Product product = Product.create(1L, "Nike", "Nike", Money.wons(100000), 5,
+        Product product = Product.create(1L, "Nike", "Nike", Money.wons(100000),260, 5,
                 LocalDate.now(), "/img.jpg", "Limited");
 
         // when & then
@@ -43,7 +43,7 @@ class ProductTest {
     @DisplayName("재고를 증가시킬 수 있다")
     void increaseStock() {
         // given
-        Product product = Product.create(1L, "Nike", "Nike", Money.wons(100000), 3,
+        Product product = Product.create(1L, "Nike", "Nike", Money.wons(100000),260, 3,
                 LocalDate.now(), "/img.jpg", "Sample");
 
         // when
@@ -57,7 +57,7 @@ class ProductTest {
     @DisplayName("재고 가용 여부를 확인한다")
     void isAvailable() {
         // given
-        Product product = Product.create(1L, "Nike", "Nike", Money.wons(100000), 5,
+        Product product = Product.create(1L, "Nike", "Nike", Money.wons(100000),260, 5,
                 LocalDate.now(), "/img.jpg", "Sample");
 
         // expect

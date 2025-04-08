@@ -2,7 +2,7 @@ package kr.hhplus.be.server.application.payment;
 
 
 import kr.hhplus.be.server.application.balance.DecreaseBalanceCommand;
-import kr.hhplus.be.server.common.vo.Money;
+import kr.hhplus.be.server.domain.common.vo.Money;
 
 public record RequestPaymentCommand(
         String orderId,

@@ -1,34 +1,62 @@
 package kr.hhplus.be.server.domain.productstatistics;
 
-import kr.hhplus.be.server.common.vo.Money;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
+import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.common.vo.Money;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDate;
+import java.util.Objects;
 
+@Entity
+@Table(name = "product_statistics")
 @Getter
-@AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class ProductStatistics {
 
-    @EqualsAndHashCode.Include
-    private final Long productId;
+    @EmbeddedId
+    private ProductStatisticsId id;
 
-
-    @EqualsAndHashCode.Include
-    private final LocalDate statDate;
-
+    @Column(nullable = false)
     private int salesCount;
 
+    @Embedded
     private Money salesAmount;
 
     public static ProductStatistics create(Long productId, LocalDate date) {
-        return new ProductStatistics(productId, date, 0, Money.wons(0));
+        return new ProductStatistics(new ProductStatisticsId(productId, date), 0, Money.wons(0));
+    }
+
+    private ProductStatistics(ProductStatisticsId id, int salesCount, Money salesAmount) {
+        this.id = id;
+        this.salesCount = salesCount;
+        this.salesAmount = salesAmount;
     }
 
     public void addSales(int quantity, Money unitPrice) {
         this.salesCount += quantity;
         this.salesAmount = this.salesAmount.add(unitPrice.multiply(quantity));
+    }
+
+    public Long getProductId() {
+        return id.getProductId();
+    }
+
+    public LocalDate getStatDate() {
+        return id.getStatDate();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ProductStatistics other)) return false;
+        return id != null && id.equals(other.id);
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(id);
     }
 }

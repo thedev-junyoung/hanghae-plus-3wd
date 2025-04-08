@@ -5,7 +5,7 @@ import kr.hhplus.be.server.application.order.OrderService;
 import kr.hhplus.be.server.application.orderexport.OrderExportService;
 import kr.hhplus.be.server.application.productstatistics.ProductStatisticsService;
 import kr.hhplus.be.server.application.productstatistics.RecordSalesCommand;
-import kr.hhplus.be.server.common.vo.Money;
+import kr.hhplus.be.server.domain.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.payment.ExternalPaymentGateway;

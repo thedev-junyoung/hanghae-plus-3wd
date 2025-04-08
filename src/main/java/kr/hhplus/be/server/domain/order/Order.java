@@ -1,33 +1,57 @@
 package kr.hhplus.be.server.domain.order;
 
-import kr.hhplus.be.server.common.vo.Money;
+import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.common.vo.Money;
 import kr.hhplus.be.server.domain.order.exception.InvalidOrderStateException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Entity
+@Table(name = "orders")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
 
-    private final String id;
-    private final Long userId;
-    private final List<OrderItem> items;
-    private final Money totalAmount;
-    private OrderStatus status;
-    private final LocalDateTime createdAt;
+    @Id
+    private String id;  // UUID or 외부에서 주입하는 key라고 가정
 
-    private Order(String id, Long userId, List<OrderItem> items, Money totalAmount, OrderStatus status, LocalDateTime createdAt) {
-        this.id = id;
-        this.userId = userId;
-        this.items = items;
-        this.totalAmount = totalAmount;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
+    @Column(nullable = false)
+    private Long userId;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    private List<OrderItem> items;
+
+    @Embedded
+    private Money totalAmount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus status;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     public static Order create(String id, Long userId, List<OrderItem> items, Money totalAmount) {
-        return new Order(id, userId, items, totalAmount, OrderStatus.CREATED, LocalDateTime.now());
+        Order order = new Order();
+        order.id = id;
+        order.userId = userId;
+        order.items = items;
+        order.totalAmount = totalAmount;
+        order.status = OrderStatus.CREATED;
+        order.createdAt = LocalDateTime.now();
+
+        // setter 없이 양방향 연관관계 유지
+        if (items != null) {
+            for (OrderItem item : items) {
+                item.initOrder(order);
+            }
+        }
+
+        return order;
     }
 
     public void cancel() {
@@ -49,4 +73,5 @@ public class Order {
             throw new InvalidOrderStateException(status, "payment");
         }
     }
+
 }

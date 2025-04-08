@@ -1,13 +1,22 @@
-package kr.hhplus.be.server.common.vo;
+package kr.hhplus.be.server.domain.common.vo;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
 @Getter
+@Embeddable
 public class Money {
-    private final BigDecimal value;
+
+    @Column(nullable = false)
+    private BigDecimal value;
+
+    protected Money() {
+        // JPA 기본 생성자
+    }
 
     private Money(BigDecimal value) {
         this.value = value;
@@ -16,9 +25,10 @@ public class Money {
     public static Money wons(long amount) {
         return new Money(BigDecimal.valueOf(amount));
     }
-    public static Money wons(BigDecimal value) {
-        return new Money(value);
+    public static Money wons(BigDecimal amount) {
+        return new Money(amount);
     }
+
     public Money add(Money other) {
         return new Money(this.value.add(other.value));
     }
@@ -34,6 +44,7 @@ public class Money {
     public Money multiply(long multiplier) {
         return new Money(this.value.multiply(BigDecimal.valueOf(multiplier)));
     }
+
     public boolean isGreaterThanOrEqual(Money other) {
         return this.value.compareTo(other.value) >= 0;
     }

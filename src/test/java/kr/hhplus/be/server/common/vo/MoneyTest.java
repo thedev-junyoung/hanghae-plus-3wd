@@ -1,9 +1,8 @@
 package kr.hhplus.be.server.common.vo;
 
+import kr.hhplus.be.server.domain.common.vo.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.*;
 

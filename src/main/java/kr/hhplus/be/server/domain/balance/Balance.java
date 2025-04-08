@@ -1,29 +1,47 @@
 package kr.hhplus.be.server.domain.balance;
 
-import kr.hhplus.be.server.common.vo.Money;
+import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.balance.exception.NotEnoughBalanceException;
-import lombok.AllArgsConstructor;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
+import kr.hhplus.be.server.domain.common.vo.Money;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "balance")
 @Getter
-@AllArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Balance {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @EqualsAndHashCode.Include
-    private final Long id;
-    private final Long userId;
+    private Long id;
+
+    @Column(nullable = false)
+    private Long userId;
+
+    @Embedded
     private Money amount;
-    private final LocalDateTime createdAt;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public static Balance createNew(Long id, Long userId, Money amount) {
+    public Balance(Long id, Long userId, Money amount) {
         LocalDateTime now = LocalDateTime.now();
-        return new Balance(id, userId, amount, now, now);
+        this.id = id;
+        this.userId = userId;
+        this.amount = amount;
+        this.createdAt = now;
+        this.updatedAt = now;
     }
 
+    public static Balance createNew(Long id, Long userId, Money amount) {
+        return new Balance(id, userId, amount);
+    }
 
     public void charge(Money value) {
         this.amount = this.amount.add(value);
@@ -34,10 +52,9 @@ public class Balance {
         if (!amount.isGreaterThanOrEqual(value)) {
             throw new NotEnoughBalanceException();
         }
-        amount = amount.subtract(value);
-        updatedAt = LocalDateTime.now();
+        this.amount = this.amount.subtract(value);
+        this.updatedAt = LocalDateTime.now();
     }
-
 
     public boolean hasEnough(Money value) {
         return this.amount.isGreaterThanOrEqual(value);

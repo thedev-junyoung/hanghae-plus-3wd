@@ -1,5 +1,6 @@
 package kr.hhplus.be.server.application.order;
 
+import kr.hhplus.be.server.domain.common.vo.Money;
 import org.springframework.transaction.annotation.Transactional; // ✅ 정답
 import kr.hhplus.be.server.application.balance.BalanceService;
 import kr.hhplus.be.server.application.balance.DecreaseBalanceCommand;
@@ -7,7 +8,6 @@ import kr.hhplus.be.server.application.product.DecreaseStockCommand;
 import kr.hhplus.be.server.application.product.GetProductDetailCommand;
 import kr.hhplus.be.server.application.product.ProductDetailResult;
 import kr.hhplus.be.server.application.product.ProductService;
-import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import lombok.RequiredArgsConstructor;

@@ -1,19 +1,39 @@
 package kr.hhplus.be.server.domain.payment;
 
-import kr.hhplus.be.server.common.vo.Money;
+import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.common.vo.Money;
 import kr.hhplus.be.server.domain.payment.exception.InvalidPaymentStateException;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
+@Entity
+@Table(name = "payment")
 @Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Payment {
-    private final String id;
-    private final String orderId;
-    private final Money amount;
+
+    @Id
+    private String id;
+
+    @Column(nullable = false)
+    private String orderId;
+
+    @Embedded
+    private Money amount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private PaymentStatus status;
-    private final String method;
-    private final LocalDateTime createdAt;
+
+    @Column(nullable = false)
+    private String method;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
 
     private Payment(String id, String orderId, Money amount, PaymentStatus status, String method, LocalDateTime createdAt) {
         this.id = id;
@@ -26,7 +46,7 @@ public class Payment {
 
     public static Payment initiate(String orderId, Money amount, String method) {
         return new Payment(
-                java.util.UUID.randomUUID().toString(),
+                UUID.randomUUID().toString(),
                 orderId,
                 amount,
                 PaymentStatus.INITIATED,
@@ -52,5 +72,4 @@ public class Payment {
     public boolean isCompleted() {
         return status == PaymentStatus.SUCCESS;
     }
-
 }

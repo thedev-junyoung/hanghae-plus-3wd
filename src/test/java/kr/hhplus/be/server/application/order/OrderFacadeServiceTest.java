@@ -2,7 +2,7 @@ package kr.hhplus.be.server.application.order;
 
 import kr.hhplus.be.server.application.balance.BalanceService;
 import kr.hhplus.be.server.application.product.*;
-import kr.hhplus.be.server.common.vo.Money;
+import kr.hhplus.be.server.domain.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.product.exception.InsufficientStockException;
@@ -10,6 +10,10 @@ import kr.hhplus.be.server.domain.product.exception.ProductNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -18,6 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class OrderFacadeServiceTest {
 
     private ProductService productService;
@@ -25,6 +30,9 @@ class OrderFacadeServiceTest {
     private OrderService orderService;
 
     private OrderFacadeService orderFacadeService;
+
+    @Captor
+    ArgumentCaptor<List<OrderItem>> orderItemsCaptor;
 
     @BeforeEach
     void setUp() {
@@ -48,13 +56,12 @@ class OrderFacadeServiceTest {
         when(productService.getProductDetail(new GetProductDetailCommand(1L))).thenReturn(new ProductDetailResult(product1));
         when(productService.getProductDetail(new GetProductDetailCommand(2L))).thenReturn(new ProductDetailResult(product2));
 
-        List<OrderItem> orderItems = List.of(
-                OrderItem.of(1L, 2, 270, Money.wons(100000)),
-                OrderItem.of(2L, 1, 280, Money.wons(120000))
-        );
-        Order mockOrder = Order.create("order-id", 100L, orderItems, Money.wons(320000));
-
-        when(orderService.createOrder(eq(100L), eq(orderItems), eq(Money.wons(320000)))).thenReturn(mockOrder);
+        // mockOrder는 추후 orderItemsCaptor 사용 후 만들어야 정확한 item 참조 가능
+        when(orderService.createOrder(eq(100L), anyList(), eq(Money.wons(320000))))
+                .thenAnswer(invocation -> {
+                    List<OrderItem> capturedItems = invocation.getArgument(1);
+                    return Order.create("order-id", 100L, capturedItems, Money.wons(320000));
+                });
 
         // When
         OrderResult result = orderFacadeService.createOrder(command);
@@ -64,11 +71,17 @@ class OrderFacadeServiceTest {
         assertThat(result.userId()).isEqualTo(100L);
         assertThat(result.totalAmount()).isEqualTo(BigDecimal.valueOf(320000));
         assertThat(result.items()).hasSize(2);
+        assertThat(result.items()).extracting("productId").containsExactlyInAnyOrder(1L, 2L);
 
         verify(productService).decreaseStock(new DecreaseStockCommand(1L, 2));
         verify(productService).decreaseStock(new DecreaseStockCommand(2L, 1));
-        verify(orderService).createOrder(eq(100L), eq(orderItems), eq(Money.wons(320000)));
+        verify(orderService).createOrder(eq(100L), orderItemsCaptor.capture(), eq(Money.wons(320000)));
+
+        List<OrderItem> captured = orderItemsCaptor.getValue();
+        assertThat(captured).hasSize(2);
+        assertThat(captured).extracting(OrderItem::getProductId).containsExactlyInAnyOrder(1L, 2L);
     }
+
 
     @Test
     @DisplayName("재고 부족 시 주문 생성 실패")

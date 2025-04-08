@@ -59,4 +59,29 @@ class OrderTest {
         // When & Then
         assertThrows(IllegalStateException.class, order::cancel);
     }
+
+    @Test
+    @DisplayName("생성된 주문은 CONFIRMED 상태로 변경할 수 있다")
+    void markOrderAsConfirmed_shouldChangeStatusToConfirmed() {
+        Order order = Order.create("order-id", 1L,
+                List.of(OrderItem.of(1L, 1, 270, Money.wons(100000))),
+                Money.wons(100000));
+
+        order.markConfirmed();
+
+        assertThat(order.getStatus()).isEqualTo(OrderStatus.CONFIRMED);
+    }
+
+    @Test
+    @DisplayName("이미 CONFIRMED 상태인 주문은 다시 CONFIRMED로 변경할 수 없다")
+    void markConfirmed_shouldFailIfNotCreatedStatus() {
+        Order order = Order.create("order-id", 1L,
+                List.of(OrderItem.of(1L, 1, 270, Money.wons(100000))),
+                Money.wons(100000));
+        order.markConfirmed();
+
+        assertThrows(IllegalStateException.class, order::markConfirmed);
+    }
+
+
 }

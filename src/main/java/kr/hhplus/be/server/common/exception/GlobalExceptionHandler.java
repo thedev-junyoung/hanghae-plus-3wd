@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.common.exception;
 
 import jakarta.persistence.EntityNotFoundException;
-import kr.hhplus.be.server.common.dto.response.CustomApiResponse;
+import kr.hhplus.be.server.common.dto.CustomApiResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;

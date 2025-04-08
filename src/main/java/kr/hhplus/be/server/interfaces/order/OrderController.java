@@ -3,7 +3,7 @@ package kr.hhplus.be.server.interfaces.order;
 import kr.hhplus.be.server.application.order.CreateOrderCommand;
 import kr.hhplus.be.server.application.order.OrderFacadeService;
 import kr.hhplus.be.server.application.order.OrderResult;
-import kr.hhplus.be.server.common.dto.response.CustomApiResponse;
+import kr.hhplus.be.server.common.dto.CustomApiResponse;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

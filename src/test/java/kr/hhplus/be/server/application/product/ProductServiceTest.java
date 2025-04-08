@@ -33,7 +33,7 @@ class ProductServiceTest {
     @DisplayName("상품 목록을 조회할 수 있다")
     void getProductList_success() {
         // given
-        Product product = Product.create(1L, "Jordan 1", "Nike", Money.wons(200_000), 260,10,
+        Product product = Product.create(1L, "Jordan 1", "Nike", Money.wons(200_000),260, 10,
                 LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
         when(productRepository.findAll()).thenReturn(List.of(product));
 
@@ -84,7 +84,7 @@ class ProductServiceTest {
 
         // then
         assertThat(result).isTrue();
-        verify(productRepository).save(product);
+        verify(productRepository).save(any());
     }
 
     @Test

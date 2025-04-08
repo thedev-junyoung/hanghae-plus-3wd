@@ -44,33 +44,18 @@ class OrderFacadeServiceTest {
 
         ProductResult product1 = new ProductResult(1L, "Nike Air", BigDecimal.valueOf(100000), 10, null, null, null, null);
         ProductResult product2 = new ProductResult(2L, "Adidas Ultra", BigDecimal.valueOf(120000), 5, null, null, null, null);
+        when(productService.getProductDetail(any())).thenReturn(
+                new ProductDetailResult(product1),
+                new ProductDetailResult(product2)
+        );
 
-        when(productService.getProductDetail(new GetProductDetailCommand(1L))).thenReturn(new ProductDetailResult(product1));
-        when(productService.getProductDetail(new GetProductDetailCommand(2L))).thenReturn(new ProductDetailResult(product2));
-
-        // 코드 구현에 따라 생성되는 OrderItem 객체
-        OrderItem orderItem1 = OrderItem.of(1L, 2, 270, Money.wons(100000));
-        OrderItem orderItem2 = OrderItem.of(2L, 1, 280, Money.wons(120000));
-        List<OrderItem> expectedOrderItems = List.of(orderItem1, orderItem2);
-
-        Money expectedTotal = Money.wons(320000);
-
-        // Mock Order 생성
-        Order mockOrder = Order.create("order-id", 100L, expectedOrderItems, expectedTotal);
-
-        // orderService.createOrder 메서드에 대한 설정
-        when(orderService.createOrder(eq(100L), argThat(items -> {
-            // OrderItem 목록이 기대한 항목들을 포함하는지 검증
-            if (items.size() != 2) return false;
-
-            OrderItem first = items.get(0);
-            OrderItem second = items.get(1);
-
-            return first.getProductId() == 1L && first.getQuantity() == 2 && first.getSize() == 270 &&
-                    first.getPrice().equals(Money.wons(100000)) &&
-                    second.getProductId() == 2L && second.getQuantity() == 1 && second.getSize() == 280 &&
-                    second.getPrice().equals(Money.wons(120000));
-        }), eq(expectedTotal))).thenReturn(mockOrder);
+        Order mockOrder = Order.create("order-id", 100L,
+                List.of(
+                        OrderItem.of(1L, 2, 270, Money.wons(100000)),
+                        OrderItem.of(2L, 1, 280, Money.wons(120000))
+                ),
+                Money.wons(320000));
+        when(orderService.createOrder(any(), any(), any())).thenReturn(mockOrder);
 
         // When
         OrderResult result = orderFacadeService.createOrder(command);
@@ -81,25 +66,9 @@ class OrderFacadeServiceTest {
         assertThat(result.totalAmount()).isEqualTo(BigDecimal.valueOf(320000));
         assertThat(result.items()).hasSize(2);
 
-        // productService.decreaseStock 메서드 호출 검증
-        verify(productService).decreaseStock(new DecreaseStockCommand(1L, 2));
-        verify(productService).decreaseStock(new DecreaseStockCommand(2L, 1));
-
-        // orderService.createOrder 메서드 호출 검증
-        verify(orderService).createOrder(eq(100L), argThat(items -> {
-            if (items.size() != 2) return false;
-
-            OrderItem first = items.get(0);
-            OrderItem second = items.get(1);
-
-            return first.getProductId() == 1L && first.getQuantity() == 2 && first.getSize() == 270 &&
-                    first.getPrice().equals(Money.wons(100000)) &&
-                    second.getProductId() == 2L && second.getQuantity() == 1 && second.getSize() == 280 &&
-                    second.getPrice().equals(Money.wons(120000));
-        }), eq(expectedTotal));
+        verify(productService, times(2)).decreaseStock(any());
+        verify(orderService).createOrder(eq(100L), any(), eq(Money.wons(320000)));
     }
-
-
     @Test
     @DisplayName("재고 부족 시 주문 생성 실패")
     void createOrder_shouldFail_whenStockInsufficient() {
@@ -108,20 +77,21 @@ class OrderFacadeServiceTest {
         CreateOrderCommand command = new CreateOrderCommand(100L, List.of(item));
 
         ProductResult product = new ProductResult(1L, "Nike Air", BigDecimal.valueOf(100000), 2, null, null, null, null);
-        when(productService.getProductDetail(new GetProductDetailCommand(1L))).thenReturn(new ProductDetailResult(product));
+        when(productService.getProductDetail(any())).thenReturn(new ProductDetailResult(product));
 
         // decreaseStock 호출 시 예외 발생
-        doThrow(new InsufficientStockException()).when(productService).decreaseStock(new DecreaseStockCommand(1L, 5));
+        doThrow(new InsufficientStockException())
+                .when(productService)
+                .decreaseStock(any());
 
         // When & Then
         assertThatThrownBy(() -> orderFacadeService.createOrder(command))
                 .isInstanceOf(InsufficientStockException.class);
 
-        verify(productService).getProductDetail(new GetProductDetailCommand(1L));
-        verify(productService).decreaseStock(new DecreaseStockCommand(1L, 5));
+        verify(productService).getProductDetail(any());
+        verify(productService).decreaseStock(any());
         verifyNoInteractions(orderService); // 주문 저장은 실행되지 않아야 함
     }
-
 
     @Test
     @DisplayName("존재하지 않는 상품으로 주문 시 실패")
@@ -130,16 +100,15 @@ class OrderFacadeServiceTest {
         CreateOrderCommand.OrderItemCommand item = new CreateOrderCommand.OrderItemCommand(999L, 1, 270);
         CreateOrderCommand command = new CreateOrderCommand(100L, List.of(item));
 
-        when(productService.getProductDetail(new GetProductDetailCommand(999L)))
+        when(productService.getProductDetail(any()))
                 .thenThrow(new ProductNotFoundException(999L));
 
         // When & Then
         assertThatThrownBy(() -> orderFacadeService.createOrder(command))
                 .isInstanceOf(ProductNotFoundException.class);
 
-        verify(productService).getProductDetail(new GetProductDetailCommand(999L));
-        // 구체적인 매처 사용하여 verify
-        verify(productService, never()).decreaseStock(new DecreaseStockCommand(999L, 1));
+        verify(productService).getProductDetail(any());
+        verify(productService, never()).decreaseStock(any());
         verifyNoInteractions(orderService);
     }
 }

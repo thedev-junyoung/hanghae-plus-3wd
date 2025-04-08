@@ -25,7 +25,14 @@ public class PaymentFacadeService implements PaymentUseCase {
 
         Payment payment = paymentService.initiate(command.orderId(), amount, command.method());
 
-        paymentService.process(command, order, payment);
+        boolean success = paymentService.process(command, order, payment);
+        if (!success) {
+            paymentService.markFailure(payment);
+            throw new IllegalStateException("잔액이 부족합니다.");
+        }
+
+        paymentService.markSuccess(payment);
+        orderService.markConfirmed(order);
 
         return PaymentResult.from(payment);
     }

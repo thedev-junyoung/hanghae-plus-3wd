@@ -10,7 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import kr.hhplus.be.server.common.exception.ApiErrorResponse;
-import kr.hhplus.be.server.common.dto.response.CustomApiResponse;
+import kr.hhplus.be.server.common.dto.CustomApiResponse;
 import kr.hhplus.be.server.regacy.domain.coupon.dto.request.CreateCouponRequest;
 import kr.hhplus.be.server.regacy.domain.coupon.dto.request.IssueCouponRequest;
 import kr.hhplus.be.server.regacy.domain.coupon.dto.response.CouponListResponse;

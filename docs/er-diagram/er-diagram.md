@@ -106,7 +106,7 @@ erDiagram
         bigint coupon_id FK "쿠폰 ID"
         boolean is_used "사용 여부"
         timestamp expiry_date "만료일"
-        bigint version "버전 (동시성 제어)"
+%%        bigint version "버전 (동시성 제어)"
         timestamp created_at "생성일"
         timestamp updated_at "수정일"
     }

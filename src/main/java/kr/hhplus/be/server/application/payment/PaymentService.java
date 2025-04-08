@@ -4,6 +4,8 @@ import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.payment.PaymentRepository;
+import kr.hhplus.be.server.domain.payment.exception.PaymentNotFoundException;
+import kr.hhplus.be.server.domain.payment.exception.UnsupportedPaymentMethodException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -39,7 +41,7 @@ public class PaymentService {
         if ("BALANCE".equalsIgnoreCase(method)) {
             return balancePaymentProcessor;
         }
-        throw new UnsupportedOperationException("지원되지 않는 결제 수단입니다: " + method);
+        throw new UnsupportedPaymentMethodException(method);
     }
 
     public Payment getByPgTraansactionId(String pgTransactionId) {
@@ -49,7 +51,7 @@ public class PaymentService {
                         Money.wons(payment.getAmount().value()),
                         payment.getMethod()
                 ))
-                .orElseThrow(() -> new IllegalArgumentException("결제 정보가 없습니다."));
+                .orElseThrow(() -> new PaymentNotFoundException(pgTransactionId));
     }
 }
 

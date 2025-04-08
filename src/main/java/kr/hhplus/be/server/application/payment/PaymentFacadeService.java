@@ -11,6 +11,7 @@ import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.orderexport.OrderExportPayload;
 import kr.hhplus.be.server.domain.payment.ExternalPaymentGateway;
 import kr.hhplus.be.server.domain.payment.Payment;
+import kr.hhplus.be.server.domain.payment.exception.ExternalSystemException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +37,7 @@ public class PaymentFacadeService implements PaymentUseCase {
         boolean paymentRequested = externalGateway.requestPayment(command.orderId());
         if (!paymentRequested) {
             paymentService.markFailure(payment);
-            throw new RuntimeException("외부 결제 요청 실패");
+            throw new ExternalSystemException("외부 결제 요청 실패");
         }
 
         // 잔액 차감 등 내부 처리
@@ -73,7 +74,7 @@ public class PaymentFacadeService implements PaymentUseCase {
         boolean confirmed = externalGateway.confirmPayment(command.pgTransactionId());
         if (!confirmed) {
             paymentService.markFailure(payment);
-            throw new RuntimeException("외부 결제 확인 실패");
+            throw new ExternalSystemException("외부 결제 확인 실패");
         }
 
         paymentService.markSuccess(payment);

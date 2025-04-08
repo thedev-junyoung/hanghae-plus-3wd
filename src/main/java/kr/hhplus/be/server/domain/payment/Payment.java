@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.payment;
 
 import kr.hhplus.be.server.common.vo.Money;
+import kr.hhplus.be.server.domain.payment.exception.InvalidPaymentStateException;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -35,10 +36,16 @@ public class Payment {
     }
 
     public void complete() {
+        if (!status.canMarkSuccess()) {
+            throw new InvalidPaymentStateException(status, "이미 완료되었거나 실패/취소된 결제입니다.");
+        }
         this.status = PaymentStatus.SUCCESS;
     }
 
     public void fail() {
+        if (!status.canMarkFailure()) {
+            throw new InvalidPaymentStateException(status, "실패 처리할 수 없는 결제 상태입니다.");
+        }
         this.status = PaymentStatus.FAILURE;
     }
 

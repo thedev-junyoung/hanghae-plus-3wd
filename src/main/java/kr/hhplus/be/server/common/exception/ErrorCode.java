@@ -51,6 +51,9 @@ public enum ErrorCode {
     // 결제 관련
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제 정보를 찾을 수 없습니다."),
     PAYMENT_ALREADY_PROCESSED(HttpStatus.CONFLICT, "이미 처리된 결제입니다."),
+    UNSUPPORTED_PAYMENT_METHOD(HttpStatus.UNPROCESSABLE_ENTITY, "지원하지 않는 결제 수단입니다."),
+    PAYMENT_PROCESSING_FAILED(HttpStatus.UNPROCESSABLE_ENTITY, "결제 처리에 실패했습니다."),
+    INVALID_PAYMENT_STATUS(HttpStatus.UNPROCESSABLE_ENTITY, "유효하지 않은 결제 상태입니다."),
 
     // 인증 관련
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "인증되지 않은 접근입니다."),

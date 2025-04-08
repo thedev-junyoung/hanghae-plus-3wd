@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.payment;
 
 import kr.hhplus.be.server.common.vo.Money;
+import kr.hhplus.be.server.domain.payment.exception.InvalidPaymentStateException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -42,5 +43,26 @@ class PaymentTest {
 
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.FAILURE);
         assertThat(payment.isCompleted()).isFalse();
+    }
+    @Test
+    @DisplayName("이미 SUCCESS 상태인 결제는 다시 성공 처리할 수 없다")
+    void complete_payment_shouldFail_ifAlreadyCompleted() {
+        Payment payment = Payment.initiate("order-001", Money.wons(5000), "BALANCE");
+        payment.complete();
+
+        assertThatThrownBy(payment::complete)
+                .isInstanceOf(InvalidPaymentStateException.class)
+                .hasMessageContaining("이미 완료되었거나 실패/취소된 결제입니다.");
+    }
+
+    @Test
+    @DisplayName("SUCCESS 상태인 결제는 실패 처리할 수 없다")
+    void fail_payment_shouldFail_ifAlreadyCompleted() {
+        Payment payment = Payment.initiate("order-001", Money.wons(5000), "BALANCE");
+        payment.complete();
+
+        assertThatThrownBy(payment::fail)
+                .isInstanceOf(InvalidPaymentStateException.class)
+                .hasMessageContaining("실패 처리할 수 없는 결제 상태입니다.");
     }
 }

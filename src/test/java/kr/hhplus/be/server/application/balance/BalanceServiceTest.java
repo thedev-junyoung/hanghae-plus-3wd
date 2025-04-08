@@ -31,9 +31,9 @@ class BalanceServiceTest {
     @DisplayName("잔액을 충전할 수 있다")
     void charge_success() {
         // given
-        Balance balance = Balance.createNew(1L, 100L, Money.wons(1000));
-        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(balance));
-        when(balanceRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        Balance existing = Balance.createNew(1L, 100L, Money.wons(1000));
+        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(existing));
+        when(balanceRepository.save(eq(existing))).thenReturn(existing); // eq로 명시적 비교
 
         ChargeBalanceCommand command = new ChargeBalanceCommand(100L, BigDecimal.valueOf(500));
 
@@ -42,15 +42,16 @@ class BalanceServiceTest {
 
         // then
         assertThat(result.balance()).isEqualTo(BigDecimal.valueOf(1500));
+        verify(balanceRepository).save(existing);
     }
 
     @Test
     @DisplayName("잔액을 차감할 수 있다")
     void decrease_success() {
         // given
-        Balance balance = Balance.createNew(1L, 100L, Money.wons(1000));
-        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(balance));
-        when(balanceRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        Balance existing = Balance.createNew(1L, 100L, Money.wons(1000));
+        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(existing));
+        when(balanceRepository.save(eq(existing))).thenReturn(existing);
 
         DecreaseBalanceCommand command = new DecreaseBalanceCommand(100L, BigDecimal.valueOf(500));
 
@@ -64,19 +65,22 @@ class BalanceServiceTest {
         verify(balanceRepository).save(captor.capture());
 
         Balance saved = captor.getValue();
-        assertThat(saved.getAmount()).isEqualTo(Money.wons(saved.getAmount().getValue()));
+        assertThat(saved.getAmount()).isEqualTo(Money.wons(500)); // 1000 - 500 = 500
     }
+
     @Test
     @DisplayName("잔액이 부족하면 예외가 발생한다")
     void decrease_fail_not_enough_balance() {
-        // given
-        Balance balance = Balance.createNew(1L, 100L, Money.wons(300));
-        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(balance));
+        // givena
+        Balance existing = Balance.createNew(1L, 100L, Money.wons(300));
+        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(existing));
 
         DecreaseBalanceCommand command = new DecreaseBalanceCommand(100L, BigDecimal.valueOf(500));
 
         // when & then
         assertThatThrownBy(() -> balanceService.decreaseBalance(command))
                 .isInstanceOf(NotEnoughBalanceException.class);
+
+        verify(balanceRepository, never()).save(any());
     }
 }

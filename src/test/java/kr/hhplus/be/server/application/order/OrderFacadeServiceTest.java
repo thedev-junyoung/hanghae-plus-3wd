@@ -44,18 +44,17 @@ class OrderFacadeServiceTest {
 
         ProductResult product1 = new ProductResult(1L, "Nike Air", BigDecimal.valueOf(100000), 10, null, null, null, null);
         ProductResult product2 = new ProductResult(2L, "Adidas Ultra", BigDecimal.valueOf(120000), 5, null, null, null, null);
-        when(productService.getProductDetail(any())).thenReturn(
-                new ProductDetailResult(product1),
-                new ProductDetailResult(product2)
-        );
 
-        Order mockOrder = Order.create("order-id", 100L,
-                List.of(
-                        OrderItem.of(1L, 2, 270, Money.wons(100000)),
-                        OrderItem.of(2L, 1, 280, Money.wons(120000))
-                ),
-                Money.wons(320000));
-        when(orderService.createOrder(any(), any(), any())).thenReturn(mockOrder);
+        when(productService.getProductDetail(new GetProductDetailCommand(1L))).thenReturn(new ProductDetailResult(product1));
+        when(productService.getProductDetail(new GetProductDetailCommand(2L))).thenReturn(new ProductDetailResult(product2));
+
+        List<OrderItem> orderItems = List.of(
+                OrderItem.of(1L, 2, 270, Money.wons(100000)),
+                OrderItem.of(2L, 1, 280, Money.wons(120000))
+        );
+        Order mockOrder = Order.create("order-id", 100L, orderItems, Money.wons(320000));
+
+        when(orderService.createOrder(eq(100L), eq(orderItems), eq(Money.wons(320000)))).thenReturn(mockOrder);
 
         // When
         OrderResult result = orderFacadeService.createOrder(command);
@@ -66,9 +65,11 @@ class OrderFacadeServiceTest {
         assertThat(result.totalAmount()).isEqualTo(BigDecimal.valueOf(320000));
         assertThat(result.items()).hasSize(2);
 
-        verify(productService, times(2)).decreaseStock(any());
-        verify(orderService).createOrder(eq(100L), any(), eq(Money.wons(320000)));
+        verify(productService).decreaseStock(new DecreaseStockCommand(1L, 2));
+        verify(productService).decreaseStock(new DecreaseStockCommand(2L, 1));
+        verify(orderService).createOrder(eq(100L), eq(orderItems), eq(Money.wons(320000)));
     }
+
     @Test
     @DisplayName("재고 부족 시 주문 생성 실패")
     void createOrder_shouldFail_whenStockInsufficient() {
@@ -77,20 +78,19 @@ class OrderFacadeServiceTest {
         CreateOrderCommand command = new CreateOrderCommand(100L, List.of(item));
 
         ProductResult product = new ProductResult(1L, "Nike Air", BigDecimal.valueOf(100000), 2, null, null, null, null);
-        when(productService.getProductDetail(any())).thenReturn(new ProductDetailResult(product));
+        when(productService.getProductDetail(new GetProductDetailCommand(1L)))
+                .thenReturn(new ProductDetailResult(product));
 
-        // decreaseStock 호출 시 예외 발생
         doThrow(new InsufficientStockException())
-                .when(productService)
-                .decreaseStock(any());
+                .when(productService).decreaseStock(new DecreaseStockCommand(1L, 5));
 
         // When & Then
         assertThatThrownBy(() -> orderFacadeService.createOrder(command))
                 .isInstanceOf(InsufficientStockException.class);
 
-        verify(productService).getProductDetail(any());
-        verify(productService).decreaseStock(any());
-        verifyNoInteractions(orderService); // 주문 저장은 실행되지 않아야 함
+        verify(productService).getProductDetail(new GetProductDetailCommand(1L));
+        verify(productService).decreaseStock(new DecreaseStockCommand(1L, 5));
+        verifyNoInteractions(orderService);
     }
 
     @Test
@@ -100,15 +100,15 @@ class OrderFacadeServiceTest {
         CreateOrderCommand.OrderItemCommand item = new CreateOrderCommand.OrderItemCommand(999L, 1, 270);
         CreateOrderCommand command = new CreateOrderCommand(100L, List.of(item));
 
-        when(productService.getProductDetail(any()))
+        when(productService.getProductDetail(new GetProductDetailCommand(999L)))
                 .thenThrow(new ProductNotFoundException(999L));
 
         // When & Then
         assertThatThrownBy(() -> orderFacadeService.createOrder(command))
                 .isInstanceOf(ProductNotFoundException.class);
 
-        verify(productService).getProductDetail(any());
-        verify(productService, never()).decreaseStock(any());
+        verify(productService).getProductDetail(new GetProductDetailCommand(999L));
+        verify(productService, never()).decreaseStock(new DecreaseStockCommand(999L, 1));
         verifyNoInteractions(orderService);
     }
 }

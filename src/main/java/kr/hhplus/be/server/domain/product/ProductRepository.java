@@ -9,7 +9,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface ProductRepository{
     Collection<Product> findTopSellingProducts();
     List<Product> findAll();

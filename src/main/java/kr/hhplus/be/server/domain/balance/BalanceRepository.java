@@ -4,7 +4,6 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-@Repository
 public interface BalanceRepository{
     Balance save(Balance balance);
     Optional<Balance> findByUserId(Long userId);

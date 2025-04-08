@@ -3,7 +3,6 @@ package kr.hhplus.be.server.infrastructure.balance;
 import kr.hhplus.be.server.domain.balance.Balance;
 import kr.hhplus.be.server.domain.balance.BalanceRepository;
 import org.springframework.stereotype.Repository;
-
 import java.util.Optional;
 
 @Repository

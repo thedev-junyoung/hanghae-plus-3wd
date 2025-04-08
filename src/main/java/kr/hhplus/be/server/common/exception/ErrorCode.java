@@ -29,8 +29,6 @@ public enum ErrorCode {
 
     // 주문 관련 에러
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND,  "주문을 찾을 수 없습니다."),
-    INVALID_ORDER_STATE(HttpStatus.BAD_REQUEST,  "유효하지 않은 주문 상태입니다."),
-    INVALID_ORDER_ITEM(HttpStatus.BAD_REQUEST,  "유효하지 않은 주문 상품입니다."),
     INVALID_ORDER_STATUS(HttpStatus.UNPROCESSABLE_ENTITY,  "유효하지 않은 주문 상태입니다."),
     // 잔액 관련 에러
     INSUFFICIENT_BALANCE(HttpStatus.UNPROCESSABLE_ENTITY,  "잔액이 부족합니다."),

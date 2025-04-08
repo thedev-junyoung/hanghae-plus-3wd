@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.common.vo.Money;
+import kr.hhplus.be.server.domain.order.exception.InvalidOrderStateException;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -30,16 +31,22 @@ public class Order {
     }
 
     public void cancel() {
-        if (status != OrderStatus.CREATED) {
-            throw new IllegalStateException("Only CREATED orders can be cancelled.");
+        if (!status.canCancel()) {
+            throw new InvalidOrderStateException(status, "cancel()");
         }
         this.status = OrderStatus.CANCELLED;
     }
 
     public void markConfirmed() {
-        if (status != OrderStatus.CREATED) {
-            throw new IllegalStateException("Only CREATED orders can be confirmed.");
+        if (!status.canConfirm()) {
+            throw new InvalidOrderStateException(status, "markConfirmed()");
         }
         this.status = OrderStatus.CONFIRMED;
+    }
+
+    public void validatePayable() {
+        if (status != OrderStatus.CREATED) {
+            throw new InvalidOrderStateException(status, "payment");
+        }
     }
 }

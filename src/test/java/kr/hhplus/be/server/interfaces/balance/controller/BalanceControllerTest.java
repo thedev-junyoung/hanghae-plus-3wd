@@ -1,6 +1,6 @@
 //package kr.hhplus.be.server.interfaces.balance.controller;
 //
-//import kr.hhplus.be.server.regacy.domain.balance.service.MockBalanceService;
+//import kr.hhplus.be.server.regacy.domain.balance.searvice.MockBalanceService;
 //import org.junit.jupiter.api.BeforeEach;
 //import org.junit.jupiter.api.DisplayName;
 //import org.junit.jupiter.api.Nested;

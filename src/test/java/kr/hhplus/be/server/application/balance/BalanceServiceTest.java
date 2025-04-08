@@ -33,7 +33,7 @@ class BalanceServiceTest {
         // given
         Balance balance = Balance.createNew(1L, 100L, Money.wons(1000));
         when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(balance));
-        when(balanceRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(balanceRepository.save(eq(balance))).thenAnswer(invocation -> invocation.getArgument(0));
 
         ChargeBalanceCommand command = new ChargeBalanceCommand(100L, BigDecimal.valueOf(500));
 
@@ -42,7 +42,9 @@ class BalanceServiceTest {
 
         // then
         assertThat(result.balance()).isEqualTo(BigDecimal.valueOf(1500));
+        verify(balanceRepository).save(eq(balance));
     }
+
 
     @Test
     @DisplayName("잔액을 차감할 수 있다")
@@ -50,7 +52,7 @@ class BalanceServiceTest {
         // given
         Balance balance = Balance.createNew(1L, 100L, Money.wons(1000));
         when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(balance));
-        when(balanceRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(balanceRepository.save(eq(balance))).thenAnswer(invocation -> invocation.getArgument(0));
 
         DecreaseBalanceCommand command = new DecreaseBalanceCommand(100L, BigDecimal.valueOf(500));
 
@@ -64,8 +66,9 @@ class BalanceServiceTest {
         verify(balanceRepository).save(captor.capture());
 
         Balance saved = captor.getValue();
-        assertThat(saved.getAmount()).isEqualTo(Money.wons(saved.getAmount().getValue()));
+        assertThat(saved.getAmount()).isEqualTo(Money.wons(500));  // 구체적인 값으로 검증
     }
+
     @Test
     @DisplayName("잔액이 부족하면 예외가 발생한다")
     void decrease_fail_not_enough_balance() {

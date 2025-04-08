@@ -84,7 +84,7 @@ class ProductServiceTest {
 
         // then
         assertThat(result).isTrue();
-        verify(productRepository).save(any());
+        verify(productRepository).save(product);
     }
 
     @Test

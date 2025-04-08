@@ -101,6 +101,6 @@ class PaymentServiceTest {
                 .isInstanceOf(UnsupportedOperationException.class)
                 .hasMessageContaining("지원되지 않는 결제 수단");
 
-        verify(balancePaymentProcessor, never()).process(any(), any(), any());
+        verify(balancePaymentProcessor, never()).process(command, mockOrder, payment);
     }
 }

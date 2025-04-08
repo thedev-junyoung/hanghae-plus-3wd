@@ -2,8 +2,11 @@ package kr.hhplus.be.server.application.payment;
 
 import kr.hhplus.be.server.application.balance.BalanceService;
 import kr.hhplus.be.server.application.order.OrderService;
+import kr.hhplus.be.server.application.productstatistics.ProductStatisticsService;
+import kr.hhplus.be.server.application.productstatistics.RecordSalesCommand;
 import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
+import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.payment.PaymentStatus;
 import kr.hhplus.be.server.infrastructure.payment.ExternalPaymentGateway;
@@ -12,6 +15,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.*;
@@ -22,6 +26,7 @@ class PaymentFacadeServiceTest {
     private OrderService orderService;
     private BalanceService balanceService;
     private ExternalPaymentGateway externalGateway;
+    private ProductStatisticsService productStatisticsService;
 
     private PaymentFacadeService paymentFacadeService;
 
@@ -31,32 +36,40 @@ class PaymentFacadeServiceTest {
         orderService = mock(OrderService.class);
         balanceService = mock(BalanceService.class);
         externalGateway = mock(ExternalPaymentGateway.class);
+        productStatisticsService = mock(ProductStatisticsService.class);
 
-        paymentFacadeService = new PaymentFacadeService(paymentService, orderService, balanceService, externalGateway);
+        paymentFacadeService = new PaymentFacadeService(
+                paymentService, orderService, balanceService, externalGateway, productStatisticsService
+        );
     }
 
     @Test
-    @DisplayName("결제 요청 성공")
+    @DisplayName("결제 요청 성공 및 통계 처리 포함")
     void requestPayment_success() {
         // Given
         RequestPaymentCommand command = new RequestPaymentCommand("order-123", 1L, "BALANCE");
 
+        OrderItem item = OrderItem.of(1L, 2, 270, Money.wons(10000));
         Order mockOrder = mock(Order.class);
+        when(mockOrder.getTotalAmount()).thenReturn(Money.wons(20000));
+        when(mockOrder.getItems()).thenReturn(List.of(item));
         when(orderService.getOrderForPayment("order-123")).thenReturn(mockOrder);
-        when(mockOrder.getTotalAmount()).thenReturn(Money.wons(50000));
 
-        Payment mockPayment = Payment.initiate("order-123", Money.wons(50000), "BALANCE");
-        when(paymentService.initiate("order-123", Money.wons(50000), "BALANCE")).thenReturn(mockPayment);
+        Payment mockPayment = Payment.initiate("order-123", Money.wons(20000), "BALANCE");
+        when(paymentService.initiate("order-123", Money.wons(20000), "BALANCE")).thenReturn(mockPayment);
 
         // When
         PaymentResult result = paymentFacadeService.requestPayment(command);
 
         // Then
         assertThat(result.orderId()).isEqualTo("order-123");
-        assertThat(result.amount()).isEqualTo(BigDecimal.valueOf(50000));
+        assertThat(result.amount()).isEqualTo(BigDecimal.valueOf(20000));
         assertThat(result.method()).isEqualTo("BALANCE");
 
         verify(paymentService).process(command, mockOrder, mockPayment);
+        verify(productStatisticsService).record(
+                new RecordSalesCommand(1L, 2, 20000L)
+        );
     }
 
     @Test
@@ -69,9 +82,8 @@ class PaymentFacadeServiceTest {
         Order order = mock(Order.class);
         when(orderService.getOrderForPayment("order-1001")).thenReturn(order);
 
-        // Mock markSuccess 메서드의 동작을 정의
         doAnswer(invocation -> {
-            payment.complete(); // 상태를 SUCCESS로 변경
+            payment.complete();
             return null;
         }).when(paymentService).markSuccess(payment);
 
@@ -89,11 +101,11 @@ class PaymentFacadeServiceTest {
     void confirmPayment_alreadyCompleted() {
         // Given
         Payment payment = Payment.initiate("order-2002", Money.wons(50000), "BALANCE");
-        Order order = mock(Order.class);
-        payment.complete(); // 이미 완료
+        payment.complete();
 
+        Order order = mock(Order.class);
         when(paymentService.getByPgTraansactionId("pg-already")).thenReturn(payment);
-        when(orderService.getOrderForPayment("order-2002")).thenReturn(order);/**/
+        when(orderService.getOrderForPayment("order-2002")).thenReturn(order);
 
         // When
         PaymentResult result = paymentFacadeService.confirmPayment(new ConfirmPaymentCommand("pg-already"));
@@ -103,5 +115,4 @@ class PaymentFacadeServiceTest {
         verify(paymentService, never()).markSuccess(payment);
         verify(orderService, never()).markConfirmed(order);
     }
-
 }

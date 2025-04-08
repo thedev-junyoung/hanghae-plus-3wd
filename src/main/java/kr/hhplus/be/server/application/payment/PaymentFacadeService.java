@@ -2,6 +2,8 @@ package kr.hhplus.be.server.application.payment;
 
 import kr.hhplus.be.server.application.balance.BalanceService;
 import kr.hhplus.be.server.application.order.OrderService;
+import kr.hhplus.be.server.application.productstatistics.ProductStatisticsService;
+import kr.hhplus.be.server.application.productstatistics.RecordSalesCommand;
 import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.payment.Payment;
@@ -17,6 +19,8 @@ public class PaymentFacadeService implements PaymentUseCase {
     private final OrderService orderService;
     private final BalanceService balanceService;
     private final ExternalPaymentGateway externalGateway;
+    private final ProductStatisticsService productStatisticsService;
+
 
     @Override
     public PaymentResult requestPayment(RequestPaymentCommand command) {
@@ -25,7 +29,19 @@ public class PaymentFacadeService implements PaymentUseCase {
 
         Payment payment = paymentService.initiate(command.orderId(), amount, command.method());
 
+        // 결제 요청
         paymentService.process(command, order, payment);
+
+        // 통계 처리
+        order.getItems().forEach(item ->
+                productStatisticsService.record(
+                        new RecordSalesCommand(
+                                item.getProductId(),
+                                item.getQuantity(),
+                                item.calculateTotal().value().longValue()
+                        )
+                )
+        );
 
         return PaymentResult.from(payment);
     }
@@ -46,6 +62,8 @@ public class PaymentFacadeService implements PaymentUseCase {
         // 4. 주문 상태도 CONFIRMED 로 변경
         Order order = orderService.getOrderForPayment(payment.getOrderId());
         orderService.markConfirmed(order);
+
+        // 실제 운영 시에는 여기서 결제완료 처리, 잔액 차감, 통계 처리 등을 진행합니다.
 
         return PaymentResult.from(payment);
     }

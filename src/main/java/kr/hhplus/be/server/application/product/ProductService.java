@@ -2,6 +2,8 @@ package kr.hhplus.be.server.application.product;
 
 import kr.hhplus.be.server.domain.product.Product;
 import kr.hhplus.be.server.domain.product.ProductRepository;
+import kr.hhplus.be.server.domain.product.ProductStock;
+import kr.hhplus.be.server.domain.product.ProductStockRepository;
 import kr.hhplus.be.server.domain.product.exception.ProductNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,7 @@ import java.util.List;
 public class ProductService implements ProductUseCase {
 
     private final ProductRepository productRepository;
+    private final ProductStockRepository productStockRepository;
 
     @Override
     public ProductListResult getProductList(GetProductListCommand command) {
@@ -42,9 +45,12 @@ public class ProductService implements ProductUseCase {
         Product product = productRepository.findById(command.productId())
                 .orElseThrow(() -> new ProductNotFoundException(command.productId()));
 
-        product.decreaseStock(command.quantity());
+        ProductStock stock = productStockRepository.findByProductIdAndSize(command.productId(), command.size())
+                .orElseThrow(() -> new IllegalStateException("해당 상품의 사이즈 재고가 없습니다."));
 
-        productRepository.save(product);
+        stock.decreaseStock(command.quantity());
+
+        productStockRepository.save(stock);
         return true;
     }
 }

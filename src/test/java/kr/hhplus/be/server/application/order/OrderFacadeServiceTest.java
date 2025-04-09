@@ -73,8 +73,8 @@ class OrderFacadeServiceTest {
         assertThat(result.items()).hasSize(2);
         assertThat(result.items()).extracting("productId").containsExactlyInAnyOrder(1L, 2L);
 
-        verify(productService).decreaseStock(new DecreaseStockCommand(1L, 2));
-        verify(productService).decreaseStock(new DecreaseStockCommand(2L, 1));
+        verify(productService).decreaseStock(new DecreaseStockCommand(1L, 260,2));
+        verify(productService).decreaseStock(new DecreaseStockCommand(2L, 260,1));
         verify(orderService).createOrder(eq(100L), orderItemsCaptor.capture(), eq(Money.wons(320000)));
 
         List<OrderItem> captured = orderItemsCaptor.getValue();
@@ -95,14 +95,14 @@ class OrderFacadeServiceTest {
                 .thenReturn(new ProductDetailResult(product));
 
         doThrow(new InsufficientStockException())
-                .when(productService).decreaseStock(new DecreaseStockCommand(1L, 5));
+                .when(productService).decreaseStock(new DecreaseStockCommand(1L, 260,5));
 
         // When & Then
         assertThatThrownBy(() -> orderFacadeService.createOrder(command))
                 .isInstanceOf(InsufficientStockException.class);
 
         verify(productService).getProductDetail(new GetProductDetailCommand(1L));
-        verify(productService).decreaseStock(new DecreaseStockCommand(1L, 5));
+        verify(productService).decreaseStock(new DecreaseStockCommand(1L, 260,5));
         verifyNoInteractions(orderService);
     }
 
@@ -121,7 +121,7 @@ class OrderFacadeServiceTest {
                 .isInstanceOf(ProductNotFoundException.class);
 
         verify(productService).getProductDetail(new GetProductDetailCommand(999L));
-        verify(productService, never()).decreaseStock(new DecreaseStockCommand(999L, 1));
+        verify(productService, never()).decreaseStock(new DecreaseStockCommand(999L,260, 1));
         verifyNoInteractions(orderService);
     }
 }

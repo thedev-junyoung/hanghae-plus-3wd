@@ -20,6 +20,6 @@ public record CreateOrderCommand(
     }
 
     public DecreaseStockCommand toDecreaseStockCommand() {
-        return new DecreaseStockCommand(items.get(0).productId, items.get(0).quantity);
+        return new DecreaseStockCommand(items.get(0).productId, items.get(0).size, items.get(0).quantity);
     }
 }

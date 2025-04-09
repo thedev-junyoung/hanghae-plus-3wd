@@ -32,8 +32,7 @@ class ProductServiceTest {
     @DisplayName("상품 목록을 조회할 수 있다")
     void getProductList_success() {
         // given
-        Product product = Product.create( "Jordan 1", "Nike", Money.wons(200_000),260, 10,
-                LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
+        Product product = Product.create( "Jordan 1", "Nike", Money.wons(200_000),LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
         when(productRepository.findAll()).thenReturn(List.of(product));
 
         // when
@@ -48,8 +47,7 @@ class ProductServiceTest {
     @DisplayName("상품 상세 조회 성공")
     void getProductDetail_success() {
         // given
-        Product product = Product.create( "Jordan 1", "Nike", Money.wons(200_000),260, 10,
-                LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
+        Product product = Product.create( "Jordan 1", "Nike", Money.wons(200_000),LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         // when
@@ -74,12 +72,12 @@ class ProductServiceTest {
     @DisplayName("상품 재고 차감 성공")
     void decreaseStock_success() {
         // given
-        Product product = Product.create( "Jordan 1", "Nike", Money.wons(200_000), 260,10,
+        Product product = Product.create( "Jordan 1", "Nike", Money.wons(200_000),
                 LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         // when
-        boolean result = productService.decreaseStock(new DecreaseStockCommand( 1L,3));
+        boolean result = productService.decreaseStock(new DecreaseStockCommand( 1L,260,3));
 
         // then
         assertThat(result).isTrue();
@@ -90,12 +88,12 @@ class ProductServiceTest {
     @DisplayName("상품 재고 차감 실패 - 재고 부족")
     void decreaseStock_insufficient() {
         // given
-        Product product = Product.create( "Jordan 1", "Nike", Money.wons(200_000), 260,1,
+        Product product = Product.create( "Jordan 1", "Nike", Money.wons(200_000),
                 LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
         when(productRepository.findById(1L)).thenReturn(Optional.of(product));
 
         // when & then
-        assertThatThrownBy(() -> productService.decreaseStock(new DecreaseStockCommand( 1L,5)))
+        assertThatThrownBy(() -> productService.decreaseStock(new DecreaseStockCommand( 1L,260,5)))
                 .isInstanceOf(InsufficientStockException.class);
     }
 }

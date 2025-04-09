@@ -78,18 +78,16 @@ public class ProductController implements ProductAPI {
             private final Long id;
             private final String name;
             private final BigDecimal price;
-            private final int stock;
             private final LocalDate releaseDate;
             private final String imageUrl;
             private final LocalDateTime createdAt;
             private final LocalDateTime updatedAt;
 
-            public ProductResponse(Long id, String name, BigDecimal price, int stock,
+            public ProductResponse(Long id, String name, BigDecimal price,
                                    LocalDate releaseDate, String imageUrl, LocalDateTime createdAt, LocalDateTime updatedAt) {
                 this.id = id;
                 this.name = name;
                 this.price = price;
-                this.stock = stock;
                 this.releaseDate = releaseDate;
                 this.imageUrl = imageUrl;
                 this.createdAt = createdAt;
@@ -98,7 +96,7 @@ public class ProductController implements ProductAPI {
 
             public static ProductResponse from(ProductResult result) {
                 return new ProductResponse(
-                        result.id(), result.name(), result.price(), result.stock(),
+                        result.id(), result.name(), result.price(),
                         result.releaseDate(), result.imageUrl(), result.createdAt(), result.updatedAt()
                 );
             }

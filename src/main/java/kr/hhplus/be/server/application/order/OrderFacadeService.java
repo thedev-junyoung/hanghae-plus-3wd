@@ -36,7 +36,7 @@ public class OrderFacadeService implements OrderUseCase {
             );
 
             productService.decreaseStock(
-                    new DecreaseStockCommand(item.productId(), item.quantity())
+                    new DecreaseStockCommand(item.productId(), item.size(),item.quantity())
             );
 
             Money itemPrice = Money.wons(product.product().price());

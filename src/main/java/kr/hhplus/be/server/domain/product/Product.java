@@ -32,12 +32,6 @@ public class Product {
     private Money price;
 
     @Column(nullable = false)
-    private int size;
-
-    @Column(nullable = false)
-    private int stock;
-
-    @Column(nullable = false)
     private LocalDate releaseDate;
 
     private String imageUrl;
@@ -50,15 +44,13 @@ public class Product {
     @Column(nullable = false)
     private LocalDateTime updatedAt;
 
-    public static Product create(String name, String brand, Money price, int size, int stock,
+    public static Product create(String name, String brand, Money price,
                                  LocalDate releaseDate, String imageUrl, String description) {
         LocalDateTime now = LocalDateTime.now();
         Product product = new Product();
         product.name = name;
         product.brand = brand;
         product.price = price;
-        product.size = size;
-        product.stock = stock;
         product.releaseDate = releaseDate;
         product.imageUrl = imageUrl;
         product.description = description;
@@ -67,20 +59,4 @@ public class Product {
         return product;
     }
 
-    public void decreaseStock(int quantity) {
-        if (!isAvailable(quantity)) {
-            throw new InsufficientStockException();
-        }
-        this.stock -= quantity;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public void increaseStock(int quantity) {
-        this.stock += quantity;
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    public boolean isAvailable(int quantity) {
-        return this.stock >= quantity;
-    }
 }

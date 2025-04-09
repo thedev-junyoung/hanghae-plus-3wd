@@ -12,6 +12,9 @@ erDiagram
     COUPONS ||--o{ USER_COUPONS : issued_as
     USER_COUPONS ||--o| ORDERS : applied_to
     USER_COUPONS ||--o{ COUPON_USAGE_HISTORY : uses
+    PRODUCTS ||--o{ PRODUCT_STOCKS : has
+    BALANCES ||--o{ BALANCE_HISTORY : tracks
+    ORDERS ||--o{ ORDER_HISTORY : status_changes
 
     USERS {
         bigint id PK "사용자 ID"
@@ -26,7 +29,14 @@ erDiagram
         timestamp created_at "생성일"
         timestamp updated_at "수정일"
     }
-
+    BALANCE_HISTORY {
+        bigint id PK
+        bigint user_id FK
+        decimal amount
+        varchar type "CHARGE, DEDUCT, REFUND 등"
+        varchar reason "결제, 충전 등 상세 사유"
+        timestamp created_at
+    }
     PRODUCTS {
         bigint id PK "상품 ID"
         varchar name "상품명"
@@ -40,7 +50,13 @@ erDiagram
         timestamp created_at "생성일"
         timestamp updated_at "수정일"
     }
-
+    PRODUCT_STOCKS {
+        bigint id PK
+        bigint product_id FK
+        int size
+        int stock_quantity
+        timestamp updated_at
+    }
     ORDERS {
         varchar id PK "주문 ID"
         bigint user_id FK "주문 사용자"
@@ -49,7 +65,23 @@ erDiagram
         varchar status "주문 상태"
         timestamp created_at "생성일"
     }
-
+    ORDER_HISTORY {
+        bigint id PK
+        varchar order_id FK
+        varchar status
+        text memo
+        timestamp changed_at
+    }
+    ORDER_EVENTS {
+        uuid id PK "이벤트 ID"
+        varchar aggregate_type "집계 타입"
+        varchar event_type "이벤트 유형"
+        text payload "이벤트 데이터 (JSON)"
+        varchar status "이벤트 상태"
+        int retry_count "재시도 횟수"
+        timestamp created_at "생성일"
+        timestamp last_attempted_at "마지막 시도"
+    }
     ORDER_ITEMS {
         bigint id PK "주문 항목 ID"
         varchar order_id FK "주문 참조"

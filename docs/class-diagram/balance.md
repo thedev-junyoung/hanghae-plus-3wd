@@ -12,6 +12,23 @@ classDiagram
         + boolean hasEnough(Money)
     }
 
+    class BalanceHistory {
+        - Long id
+        - Long userId
+        - Money amountChanged
+        - BalanceChangeType type
+        - String reason
+        - LocalDateTime changedAt
+        + static recordCharge(userId, amount, reason): BalanceHistory
+        + static recordDecrease(userId, amount, reason): BalanceHistory
+    }
+
+    class BalanceChangeType {
+        <<enumeration>>
+        CHARGE
+        DECREASE
+    }
+
     class Money {
 <<Value Object>>
 - BigDecimal amount
@@ -24,6 +41,7 @@ classDiagram
 
 class BalanceService {
 - BalanceRepository balanceRepository
+- BalanceHistoryRepository balanceHistoryRepository
 + BalanceResult charge(ChargeBalanceCommand)
 + BalanceResult getBalance(Long)
 + boolean decreaseBalance(DecreaseBalanceCommand)
@@ -40,6 +58,12 @@ class BalanceRepository {
 <<interface>>
 + Optional~Balance~ findByUserId(Long)
 + Balance save(Balance)
+}
+
+class BalanceHistoryRepository {
+<<interface>>
++ void save(BalanceHistory)
++ List~BalanceHistory~ findByUserId(Long)
 }
 
 class ChargeBalanceCommand {
@@ -74,10 +98,15 @@ class NotEnoughBalanceException {
 
 %% 관계
 BalanceService --> BalanceRepository
+BalanceService --> BalanceHistoryRepository
 BalanceService --> BalanceUseCase
 BalanceUseCase <|.. BalanceService
 Balance --> Money
+Balance --> BalanceHistory
 BalanceService --> ChargeBalanceCommand
 BalanceService --> DecreaseBalanceCommand
 BalanceService --> BalanceResult
+BalanceHistory --> BalanceChangeType
+BalanceHistory --> Money
+
 ```

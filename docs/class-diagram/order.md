@@ -28,6 +28,40 @@ classDiagram
         CANCELLED
     }
 
+    class OrderHistory {
+        - Long id
+        - String orderId
+        - OrderStatus status
+        - String memo
+        - LocalDateTime changedAt
+        + static recordStatus(Order, String)
+    }
+
+    class OrderEvent {
+        - UUID id
+        - String aggregateType
+        - String eventType
+        - String payload
+        - String status
+        - int retryCount
+        - LocalDateTime createdAt
+        - LocalDateTime lastAttemptedAt
+        + static fromOrder(Order)
+    }
+
+    class OutboxEvent {
+        - UUID id
+        - String aggregateType
+        - String aggregateId
+        - String eventType
+        - String payload
+        - String status
+        - int retryCount
+        - LocalDateTime createdAt
+        - LocalDateTime lastAttemptedAt
+        + static from(OrderEvent)
+    }
+
     class OrderFacadeService {
         - ProductService productService
         - BalanceService balanceService
@@ -37,6 +71,8 @@ classDiagram
 
     class OrderService {
         - OrderRepository orderRepository
+        - OrderHistoryRepository orderHistoryRepository
+        - OrderEventPublisher orderEventPublisher
         + Order createOrder(Long, List~OrderItem~, Money)
         + Order getOrderForPayment(String)
         + void markConfirmed(Order)
@@ -73,10 +109,17 @@ classDiagram
     OrderUseCase <|.. OrderFacadeService
 
     OrderService --> OrderRepository
+    OrderService --> OrderHistoryRepository
+    OrderService --> OrderEventPublisher
     OrderService --> Order
 
     Order --> OrderItem
     Order --> OrderStatus
     Order --> Money
     OrderItem --> Money
+
+    Order --> OrderHistory
+    Order --> OrderEvent
+    OrderEvent --> OutboxEvent
+
 ```**

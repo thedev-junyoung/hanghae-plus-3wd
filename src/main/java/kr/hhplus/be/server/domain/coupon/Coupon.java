@@ -1,21 +1,53 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import lombok.AllArgsConstructor;
+import jakarta.persistence.*;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+@Entity
+@Table(name = "coupon")
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor
 public class Coupon {
-    private final Long id;
-    private final String code;
-    private final String type; // ex: PERCENTAGE, FIXED
-    private final Integer discountRate;
-    private final Integer totalQuantity;
-    private final Integer remainingQuantity;
-    private final LocalDateTime validFrom;
-    private final LocalDateTime validUntil;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(nullable = false, unique = true)
+    private String code;
+
+    @Enumerated(EnumType.STRING) // ← 중요!
+    @Column(nullable = false)
+    private CouponType type;
+
+    @Column(nullable = false)
+    private Integer discountRate;
+
+    @Column(nullable = false)
+    private Integer totalQuantity;
+
+    @Column(nullable = false)
+    private Integer remainingQuantity;
+
+    @Column(nullable = false)
+    private LocalDateTime validFrom;
+
+    @Column(nullable = false)
+    private LocalDateTime validUntil;
+
+    public Coupon(String code, CouponType type, Integer discountRate, Integer totalQuantity,
+                  Integer remainingQuantity, LocalDateTime validFrom, LocalDateTime validUntil) {
+        this.code = code;
+        this.type = type;
+        this.discountRate = discountRate;
+        this.totalQuantity = totalQuantity;
+        this.remainingQuantity = remainingQuantity;
+        this.validFrom = validFrom;
+        this.validUntil = validUntil;
+    }
 
     public boolean isExpired() {
         return validUntil.isBefore(LocalDateTime.now());
@@ -24,5 +56,13 @@ public class Coupon {
     public boolean isExhausted() {
         return remainingQuantity <= 0;
     }
+
+    public void decreaseQuantity() {
+        if (isExhausted()) {
+            throw new IllegalStateException("쿠폰이 모두 소진되었습니다.");
+        }
+        this.remainingQuantity -= 1;
+    }
 }
+
 

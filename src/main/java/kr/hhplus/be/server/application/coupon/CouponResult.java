@@ -16,7 +16,7 @@ public record CouponResult(
         return new CouponResult(
                 issue.getId(),
                 issue.getUserId(),
-                issue.getCoupon().getType(),
+                issue.getCoupon().getType().name(),
                 issue.getCoupon().getDiscountRate(),
                 issue.getIssuedAt(),
                 issue.getCoupon().getValidUntil()

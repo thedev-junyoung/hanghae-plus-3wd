@@ -3,7 +3,6 @@ package kr.hhplus.be.server.application.product;
 import kr.hhplus.be.server.domain.product.Product;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public record ProductResult(
         Long id,

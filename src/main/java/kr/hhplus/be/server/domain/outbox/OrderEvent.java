@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.order.Order;
+import kr.hhplus.be.server.domain.orderexport.OrderExportPayload;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,11 +42,12 @@ public class OrderEvent {
     private static final ObjectMapper objectMapper = new ObjectMapper();
 
     public static OrderEvent paymentCompleted(Order order) {
+        OrderExportPayload exportPayload = OrderExportPayload.from(order);
         return new OrderEvent(
                 UUID.randomUUID(),
                 "ORDER",
                 "PAYMENT_COMPLETED",
-                toJson(order),
+                toJson(exportPayload),
                 EventStatus.PENDING,
                 LocalDateTime.now()
         );
@@ -60,11 +62,11 @@ public class OrderEvent {
         this.createdAt = createdAt;
     }
 
-    private static String toJson(Order order) {
+    private static String toJson(Object payload) {
         try {
-            return objectMapper.writeValueAsString(order);
+            return objectMapper.writeValueAsString(payload);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException("Order 직렬화 실패", e);
+            throw new RuntimeException("Payload 직렬화 실패", e);
         }
     }
 

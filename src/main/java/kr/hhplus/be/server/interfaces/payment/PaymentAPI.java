@@ -29,9 +29,4 @@ public interface PaymentAPI {
             @Valid @RequestBody PaymentRequest request
     );
 
-    @Operation(summary = "결제 확인", description = "PG사 트랜잭션 ID를 기반으로 결제를 확인합니다.")
-    @PostMapping("/confirm")
-    ResponseEntity<CustomApiResponse<PaymentResponse>> confirmPayment(
-            @RequestParam String pgTransactionId
-    );
 }

@@ -20,10 +20,10 @@ public class PaymentResponse {
     @Schema(description = "결제 금액", example = "10000")
     private final long amount;
 
-    @Schema(description = "결제 수단", example = "CARD")
+    @Schema(description = "결제 수단", example = "BALANCE")
     private final String method;
 
-    @Schema(description = "결제 상태", example = "COMPLETED")
+    @Schema(description = "결제 상태", example = "SUCCESS")
     private final String status;
 
     @Schema(description = "결제 생성 시간", example = "2025-04-10T14:30:00")
@@ -35,7 +35,7 @@ public class PaymentResponse {
                 result.orderId(),
                 result.amount(),
                 result.method(),
-                result.status().name(),
+                result.status(),
                 result.createdAt()
         );
     }

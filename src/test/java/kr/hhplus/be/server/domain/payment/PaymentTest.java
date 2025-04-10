@@ -4,74 +4,47 @@ import kr.hhplus.be.server.common.vo.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class PaymentTest {
 
     @Test
-    @DisplayName("결제 객체 생성 - 초기 상태는 INITIATED")
-    void initiate_payment_success() {
-        Payment payment = Payment.initiate("order-001", Money.wons(10000), "BALANCE");
+    @DisplayName("성공 상태의 결제 객체 생성 테스트")
+    void create_success_payment() {
+        // given
+        String orderId = "order-123";
+        Money amount = Money.wons(10000);
+        String method = "BALANCE";
 
-        assertThat(payment.getOrderId()).isEqualTo("order-001");
-        assertThat(payment.getAmount()).isEqualTo(10000);
-        assertThat(payment.getMethod()).isEqualTo("BALANCE");
-        assertThat(payment.getStatus()).isEqualTo(PaymentStatus.INITIATED);
-        assertThat(payment.getCreatedAt()).isNotNull();
-    }
+        // when
+        Payment payment = Payment.createSuccess(orderId, amount, method);
 
-    @Test
-    @DisplayName("결제 성공 시 상태는 SUCCESS")
-    void complete_payment_changes_status() {
-        Payment payment = Payment.initiate("order-001", Money.wons(5000), "BALANCE");
-
-        payment.complete();
-
+        // then
+        assertThat(payment).isNotNull();
+        assertThat(payment.getOrderId()).isEqualTo(orderId);
+        assertThat(payment.getAmount()).isEqualTo(amount.value());
+        assertThat(payment.getMethod()).isEqualTo(method);
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.SUCCESS);
-        assertThat(payment.isCompleted()).isTrue();
+        assertThat(payment.isSuccess()).isTrue();
     }
 
     @Test
-    @DisplayName("결제 실패 시 상태는 FAILURE")
-    void fail_payment_changes_status() {
-        Payment payment = Payment.initiate("order-001", Money.wons(7000), "CARD");
+    @DisplayName("실패 상태의 결제 객체 생성 테스트")
+    void create_failure_payment() {
+        // given
+        String orderId = "order-456";
+        Money amount = Money.wons(5000);
+        String method = "BALANCE";
 
-        payment.fail();
+        // when
+        Payment payment = Payment.createFailure(orderId, amount, method);
 
+        // then
+        assertThat(payment).isNotNull();
+        assertThat(payment.getOrderId()).isEqualTo(orderId);
+        assertThat(payment.getAmount()).isEqualTo(amount.value());
+        assertThat(payment.getMethod()).isEqualTo(method);
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.FAILURE);
-        assertThat(payment.isCompleted()).isFalse();
-    }
-
-    @Test
-    @DisplayName("이미 SUCCESS 상태인 결제는 다시 성공 처리할 수 없다")
-    void complete_payment_should_fail_if_already_completed() {
-        Payment payment = Payment.initiate("order-001", Money.wons(5000), "BALANCE");
-        payment.complete();
-
-        assertThatThrownBy(payment::complete)
-                .isInstanceOf(PaymentException.InvalidStateException.class)
-                .hasMessageContaining("이미 완료되었거나 실패/취소된 결제입니다.");
-    }
-
-    @Test
-    @DisplayName("SUCCESS 상태인 결제는 실패 처리할 수 없다")
-    void fail_payment_should_fail_if_already_completed() {
-        Payment payment = Payment.initiate("order-001", Money.wons(5000), "BALANCE");
-        payment.complete();
-
-        assertThatThrownBy(payment::fail)
-                .isInstanceOf(PaymentException.InvalidStateException.class)
-                .hasMessageContaining("실패 처리할 수 없는 결제 상태입니다.");
-    }
-
-    @Test
-    @DisplayName("결제 금액이 예상 값과 다르면 예외 발생")
-    void validate_amount_should_fail_when_mismatch() {
-        Payment payment = Payment.initiate("order-123", Money.wons(15000), "BALANCE");
-
-        assertThatThrownBy(() -> payment.validateAmount(Money.wons(10000)))
-                .isInstanceOf(PaymentException.MismatchedAmountException.class)
-                .hasMessageContaining("expected=10000")
-                .hasMessageContaining("actual=15000");
+        assertThat(payment.isSuccess()).isFalse();
     }
 }

@@ -12,7 +12,7 @@ class BalanceTest {
     @DisplayName("잔액을 충전할 수 있다")
     void charge_balance() {
         Balance balance = Balance.createNew(1L, 100L, Money.wons(1000));
-        balance.charge(Money.wons(1000)); // ✅ 정책 준수
+        balance.charge(Money.wons(1000));
 
         assertThat(balance.getAmount()).isEqualTo(2000L);
     }

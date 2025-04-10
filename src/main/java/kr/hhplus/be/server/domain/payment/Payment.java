@@ -43,38 +43,41 @@ public class Payment {
         this.createdAt = createdAt;
     }
 
-    public static Payment initiate(String orderId, Money amount, String method) {
+    public static Payment create(String orderId, Money amount, PaymentStatus status, String method) {
         return new Payment(
                 UUID.randomUUID().toString(),
                 orderId,
                 amount,
-                PaymentStatus.INITIATED,
+                status,
                 method,
                 LocalDateTime.now()
         );
     }
 
-    public void complete() {
-        if (!status.canMarkSuccess()) {
-            throw new PaymentException.InvalidStateException(status, "이미 완료되었거나 실패/취소된 결제입니다.");
-        }
-        this.status = PaymentStatus.SUCCESS;
+    public static Payment createSuccess(String orderId, Money amount, String method) {
+        return new Payment(
+                UUID.randomUUID().toString(),
+                orderId,
+                amount,
+                PaymentStatus.SUCCESS,
+                method,
+                LocalDateTime.now()
+        );
     }
 
-    public void fail() {
-        if (!status.canMarkFailure()) {
-            throw new PaymentException.InvalidStateException(status, "실패 처리할 수 없는 결제 상태입니다.");
-        }
-        this.status = PaymentStatus.FAILURE;
+    public static Payment createFailure(String orderId, Money amount, String method) {
+        return new Payment(
+                UUID.randomUUID().toString(),
+                orderId,
+                amount,
+                PaymentStatus.FAILURE,
+                method,
+                LocalDateTime.now()
+        );
     }
 
-    public boolean isCompleted() {
-        return status == PaymentStatus.SUCCESS;
-    }
-
-    public void validateAmount(Money expected) {
-        if (!expected.equals(Money.wons(this.amount))) {
-            throw new PaymentException.MismatchedAmountException(expected.value(), this.amount);
-        }
+    public boolean isSuccess() {
+        return this.status == PaymentStatus.SUCCESS;
     }
 }
+

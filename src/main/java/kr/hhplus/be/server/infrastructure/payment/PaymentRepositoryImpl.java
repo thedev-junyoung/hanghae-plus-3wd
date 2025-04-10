@@ -10,11 +10,5 @@ import java.util.Optional;
 public class PaymentRepositoryImpl implements PaymentRepository {
     @Override
     public void save(Payment payment) {
-
-    }
-
-    @Override
-    public Optional<Payment> findByPgTransactionId(String pgTransactionId) {
-        return Optional.empty();
     }
 }

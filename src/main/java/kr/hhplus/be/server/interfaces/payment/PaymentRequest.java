@@ -19,7 +19,10 @@ public class PaymentRequest {
     @NotBlank
     private String method;
 
+    private Long amount;
+
+
     public RequestPaymentCommand toCommand() {
-        return new RequestPaymentCommand(orderId, userId, method);
+        return new RequestPaymentCommand(orderId, userId, amount, method);
     }
 }

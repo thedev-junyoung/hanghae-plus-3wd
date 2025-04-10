@@ -1,11 +1,18 @@
 package kr.hhplus.be.server.common.vo;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonValue;
+import lombok.Value;
 
 import java.util.Objects;
 
+@Value
 public class Money {
-
-    private final long value;
-
+    @JsonValue
+    long value;
+    @JsonCreator
+    public static Money from(long value) {
+        return new Money(value);
+    }
     private Money(long value) {
         this.value = value;
     }

@@ -6,6 +6,7 @@ import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.payment.Payment;
+import kr.hhplus.be.server.domain.payment.PaymentStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -31,13 +32,13 @@ class BalancePaymentProcessorTest {
     @DisplayName("잔액 결제 프로세서 - 잔액 차감 성공 시 true 반환")
     void process_shouldReturnTrue_whenBalanceIsEnough() {
         // given
-        RequestPaymentCommand command = new RequestPaymentCommand("ORDER-001", 100L, "BALANCE");
+        RequestPaymentCommand command = new RequestPaymentCommand("ORDER-001", 100L, 1000L,"BALANCE");
 
         Order order = Order.create("ORDER-001", 100L,
                 List.of(OrderItem.of(1L, 2, 270, Money.wons(100000))),
                 Money.wons(200000));
 
-        Payment payment = Payment.initiate(order.getId(), Money.wons(order.getTotalAmount()), "BALANCE");
+        Payment payment = Payment.create(order.getId(), Money.wons(order.getTotalAmount()), PaymentStatus.SUCCESS,"BALANCE");
 
         when(balanceService.decreaseBalance(any(DecreaseBalanceCommand.class))).thenReturn(true);
 
@@ -47,7 +48,6 @@ class BalancePaymentProcessorTest {
         // then
         assertThat(result).isTrue();
 
-        // ✅ BigDecimal 비교는 compareTo()로!
         verify(balanceService).decreaseBalance(eq(
                 new DecreaseBalanceCommand(100L, 200000)
         ));

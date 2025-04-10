@@ -1,7 +1,5 @@
 package kr.hhplus.be.server.domain.coupon;
 
-import kr.hhplus.be.server.domain.coupon.exception.CouponAlreadyExhaustedException;
-import kr.hhplus.be.server.domain.coupon.exception.CouponExpiredException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -51,7 +49,7 @@ class CouponTest {
                 LocalDateTime.now().minusDays(5), LocalDateTime.now().minusMinutes(1));
 
         assertThatThrownBy(expired::validateUsable)
-                .isInstanceOf(CouponExpiredException.class);
+                .isInstanceOf(CouponException.ExpiredException.class);
     }
 
     @Test
@@ -61,7 +59,7 @@ class CouponTest {
         coupon.decreaseQuantity(); // 수량 0
 
         assertThatThrownBy(coupon::validateUsable)
-                .isInstanceOf(CouponAlreadyExhaustedException.class);
+                .isInstanceOf(CouponException.AlreadyExhaustedException.class);
     }
 
     @Test

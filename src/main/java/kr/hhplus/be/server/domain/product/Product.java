@@ -2,7 +2,6 @@ package kr.hhplus.be.server.domain.product;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.common.vo.Money;
-import kr.hhplus.be.server.domain.product.exception.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -49,7 +48,7 @@ public class Product {
     public static Product create(String name, String brand, Money price,
                                  LocalDate releaseDate, String imageUrl, String description) {
         if (description != null && description.length() > MAX_DESCRIPTION_LENGTH) {
-            throw new DescriptionTooLongException(MAX_DESCRIPTION_LENGTH);
+            throw new ProductException.DescriptionTooLongException(MAX_DESCRIPTION_LENGTH);
         }
 
         LocalDateTime now = LocalDateTime.now();
@@ -67,7 +66,7 @@ public class Product {
 
     public void updateDescription(String newDescription) {
         if (newDescription != null && newDescription.length() > MAX_DESCRIPTION_LENGTH) {
-            throw new DescriptionTooLongException(MAX_DESCRIPTION_LENGTH);
+            throw new ProductException.DescriptionTooLongException(MAX_DESCRIPTION_LENGTH);
         }
         this.description = newDescription;
         this.updatedAt = LocalDateTime.now();
@@ -79,10 +78,10 @@ public class Product {
 
     public void validateOrderable(int totalStock) {
         if (!isReleased()) {
-            throw new ProductNotReleasedException(this.id);
+            throw new ProductException.NotReleasedException(this.id);
         }
         if (totalStock <= 0) {
-            throw new ProductOutOfStockException(this.id);
+            throw new ProductException.OutOfStockException(this.id);
         }
     }
 

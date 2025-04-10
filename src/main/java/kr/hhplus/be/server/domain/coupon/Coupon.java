@@ -1,8 +1,6 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.coupon.exception.CouponAlreadyExhaustedException;
-import kr.hhplus.be.server.domain.coupon.exception.CouponExpiredException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -67,10 +65,10 @@ public class Coupon {
 
     public void validateUsable() {
         if (isExpired()) {
-            throw new CouponExpiredException();
+            throw new CouponException.ExpiredException();
         }
         if (isExhausted()) {
-            throw new CouponAlreadyExhaustedException();
+            throw new CouponException.AlreadyExhaustedException();
         }
     }
 

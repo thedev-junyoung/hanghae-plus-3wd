@@ -1,8 +1,8 @@
 package kr.hhplus.be.server.application.balance;
 
 import kr.hhplus.be.server.domain.balance.Balance;
+import kr.hhplus.be.server.domain.balance.BalanceException;
 import kr.hhplus.be.server.domain.balance.BalanceRepository;
-import kr.hhplus.be.server.domain.balance.exception.BalanceNotFoundException;
 import kr.hhplus.be.server.common.vo.Money;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -18,7 +18,7 @@ public class BalanceService implements BalanceUseCase {
     @Override
     public BalanceInfo charge(ChargeBalanceCommand command) {
         Balance balance = balanceRepository.findByUserId(command.userId())
-                .orElseThrow(() -> new BalanceNotFoundException(command.userId()));
+                .orElseThrow(() -> new BalanceException.NotFoundException(command.userId()));
 
         balance.charge(Money.wons(command.amount()));
 
@@ -29,7 +29,7 @@ public class BalanceService implements BalanceUseCase {
     @Override
     public BalanceResult getBalance(Long userId) {
         Balance balance = balanceRepository.findByUserId(userId)
-                .orElseThrow(() -> new BalanceNotFoundException(userId));
+                .orElseThrow(() -> new BalanceException.NotFoundException(userId));
 
         return BalanceResult.fromDomain(balance);
     }
@@ -37,7 +37,7 @@ public class BalanceService implements BalanceUseCase {
     @Override
     public boolean decreaseBalance(DecreaseBalanceCommand command) {
         Balance balance = balanceRepository.findByUserId(command.userId())
-                .orElseThrow(() -> new BalanceNotFoundException(command.userId()));
+                .orElseThrow(() -> new BalanceException.NotFoundException(command.userId()));
 
         balance.decrease(Money.wons(command.amount()));
 

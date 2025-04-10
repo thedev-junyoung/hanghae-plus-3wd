@@ -1,11 +1,6 @@
 package kr.hhplus.be.server.application.product;
 
-import kr.hhplus.be.server.domain.product.Product;
-import kr.hhplus.be.server.domain.product.ProductRepository;
-import kr.hhplus.be.server.domain.product.ProductStock;
-import kr.hhplus.be.server.domain.product.ProductStockRepository;
-import kr.hhplus.be.server.domain.product.exception.InsufficientStockException;
-import kr.hhplus.be.server.domain.product.exception.ProductNotFoundException;
+import kr.hhplus.be.server.domain.product.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -31,17 +26,17 @@ public class ProductService implements ProductUseCase {
     @Override
     public ProductDetailResult getProductDetail(GetProductDetailCommand command) {
         Product product = productRepository.findById(command.productId())
-                .orElseThrow(() -> new ProductNotFoundException(command.productId()));
+                .orElseThrow(() -> new ProductException.NotFoundException(command.productId()));
         return ProductDetailResult.from(product);
     }
 
     @Override
     public boolean decreaseStock(DecreaseStockCommand command) {
         Product product = productRepository.findById(command.productId())
-                .orElseThrow(() -> new ProductNotFoundException(command.productId()));
+                .orElseThrow(() -> new ProductException.NotFoundException(command.productId()));
 
         ProductStock stock = productStockRepository.findByProductIdAndSize(command.productId(), command.size())
-                .orElseThrow(InsufficientStockException::new);
+                .orElseThrow(ProductException.InsufficientStockException::new);
 
         stock.decreaseStock(command.quantity());
 
@@ -53,6 +48,6 @@ public class ProductService implements ProductUseCase {
     @Override
     public Product findProduct(Long productId) {
         return productRepository.findById(productId)
-                .orElseThrow(() -> new ProductNotFoundException(productId));
+                .orElseThrow(() -> new ProductException.NotFoundException(productId));
     }
 }

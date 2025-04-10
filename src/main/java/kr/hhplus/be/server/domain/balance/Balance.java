@@ -1,8 +1,6 @@
 package kr.hhplus.be.server.domain.balance;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.balance.exception.NotEnoughBalanceException;
-import kr.hhplus.be.server.domain.balance.exception.MinimumChargeAmountException;
 import kr.hhplus.be.server.common.vo.Money;
 import lombok.*;
 
@@ -55,7 +53,7 @@ public class Balance {
     public void decrease(Money value) {
         Money current = Money.wons(amount);
         if (!current.isGreaterThanOrEqual(value)) {
-            throw new NotEnoughBalanceException();
+            throw new BalanceException.NotEnoughBalanceException();
         }
         this.amount = current.subtract(value).value();
         this.updatedAt = LocalDateTime.now();
@@ -71,7 +69,7 @@ public class Balance {
 
         public static void validateMinimumCharge(Money amount) {
             if (amount.value() < MINIMUM_CHARGE_AMOUNT) {
-                throw new MinimumChargeAmountException(MINIMUM_CHARGE_AMOUNT);
+                throw new BalanceException.MinimumChargeAmountException(MINIMUM_CHARGE_AMOUNT);
             }
         }
     }

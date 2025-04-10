@@ -2,8 +2,6 @@ package kr.hhplus.be.server.domain.payment;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.common.vo.Money;
-import kr.hhplus.be.server.domain.payment.exception.InvalidPaymentStateException;
-import kr.hhplus.be.server.domain.payment.exception.MismatchedPaymentAmountException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -58,14 +56,14 @@ public class Payment {
 
     public void complete() {
         if (!status.canMarkSuccess()) {
-            throw new InvalidPaymentStateException(status, "이미 완료되었거나 실패/취소된 결제입니다.");
+            throw new PaymentException.InvalidStateException(status, "이미 완료되었거나 실패/취소된 결제입니다.");
         }
         this.status = PaymentStatus.SUCCESS;
     }
 
     public void fail() {
         if (!status.canMarkFailure()) {
-            throw new InvalidPaymentStateException(status, "실패 처리할 수 없는 결제 상태입니다.");
+            throw new PaymentException.InvalidStateException(status, "실패 처리할 수 없는 결제 상태입니다.");
         }
         this.status = PaymentStatus.FAILURE;
     }
@@ -76,7 +74,7 @@ public class Payment {
 
     public void validateAmount(Money expected) {
         if (!expected.equals(Money.wons(this.amount))) {
-            throw new MismatchedPaymentAmountException(expected.value(), this.amount);
+            throw new PaymentException.MismatchedAmountException(expected.value(), this.amount);
         }
     }
 }

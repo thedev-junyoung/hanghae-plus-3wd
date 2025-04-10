@@ -5,8 +5,7 @@ import kr.hhplus.be.server.application.product.*;
 import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
-import kr.hhplus.be.server.domain.product.exception.InsufficientStockException;
-import kr.hhplus.be.server.domain.product.exception.ProductNotFoundException;
+import kr.hhplus.be.server.domain.product.ProductException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -99,12 +98,12 @@ class OrderFacadeServiceTest {
         when(productService.getProductDetail(new GetProductDetailCommand(1L)))
                 .thenReturn(new ProductDetailResult(product));
 
-        doThrow(new InsufficientStockException("재고가 부족합니다."))
+        doThrow(new ProductException.InsufficientStockException("재고가 부족합니다."))
                 .when(productService).decreaseStock(new DecreaseStockCommand(1L, 270, 5));
 
         // When & Then
         assertThatThrownBy(() -> orderFacadeService.createOrder(command))
-                .isInstanceOf(InsufficientStockException.class);
+                .isInstanceOf(ProductException.InsufficientStockException.class);
 
         verify(productService).getProductDetail(new GetProductDetailCommand(1L));
         verify(productService).decreaseStock(new DecreaseStockCommand(1L, 270, 5));
@@ -119,11 +118,11 @@ class OrderFacadeServiceTest {
         CreateOrderCommand command = new CreateOrderCommand(100L, List.of(item));
 
         when(productService.getProductDetail(new GetProductDetailCommand(999L)))
-                .thenThrow(new ProductNotFoundException(999L));
+                .thenThrow(new ProductException.NotFoundException(999L));
 
         // When & Then
         assertThatThrownBy(() -> orderFacadeService.createOrder(command))
-                .isInstanceOf(ProductNotFoundException.class);
+                .isInstanceOf(ProductException.NotFoundException.class);
 
         verify(productService).getProductDetail(new GetProductDetailCommand(999L));
         verify(productService, never()).decreaseStock(new DecreaseStockCommand(999L,260, 1));

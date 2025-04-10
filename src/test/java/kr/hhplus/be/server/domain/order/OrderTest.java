@@ -1,9 +1,6 @@
 package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.common.vo.Money;
-import kr.hhplus.be.server.domain.order.exception.EmptyOrderItemException;
-import kr.hhplus.be.server.domain.order.exception.InvalidOrderStateException;
-import kr.hhplus.be.server.domain.order.exception.InvalidTotalAmountException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -54,7 +51,7 @@ class OrderTest {
 
         order.cancel(); // 상태를 CANCELLED로 전환
 
-        assertThrows(InvalidOrderStateException.class, order::cancel);
+        assertThrows(OrderException.InvalidStateException.class, order::cancel);
     }
 
     @Test
@@ -78,7 +75,7 @@ class OrderTest {
 
         order.markConfirmed(); // CONFIRMED 상태
 
-        assertThrows(InvalidOrderStateException.class, order::markConfirmed);
+        assertThrows(OrderException.InvalidStateException.class, order::markConfirmed);
     }
 
     @Test
@@ -86,7 +83,7 @@ class OrderTest {
     void createOrder_shouldFail_whenNoItems() {
         assertThatThrownBy(() ->
                 Order.create("order-id", 1L, List.of(), Money.wons(0))
-        ).isInstanceOf(EmptyOrderItemException.class);
+        ).isInstanceOf(OrderException.EmptyItemException.class);
     }
 
     @Test
@@ -112,7 +109,7 @@ class OrderTest {
 
         assertThatThrownBy(() ->
                 Order.create("order-id", 1L, items, Money.wons(150000))
-        ).isInstanceOf(InvalidTotalAmountException.class)
+        ).isInstanceOf(OrderException.InvalidTotalAmountException.class)
                 .hasMessageContaining("expected=200000")
                 .hasMessageContaining("actual=150000");
     }

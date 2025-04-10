@@ -2,9 +2,6 @@ package kr.hhplus.be.server.domain.order;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.common.vo.Money;
-import kr.hhplus.be.server.domain.order.exception.EmptyOrderItemException;
-import kr.hhplus.be.server.domain.order.exception.InvalidOrderStateException;
-import kr.hhplus.be.server.domain.order.exception.InvalidTotalAmountException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -41,7 +38,7 @@ public class Order {
 
     public static Order create(String id, Long userId, List<OrderItem> items, Money totalAmount) {
         if (items == null || items.isEmpty()) {
-            throw new EmptyOrderItemException();
+            throw new OrderException.EmptyItemException();
         }
 
         long expectedTotal = items.stream()
@@ -49,7 +46,7 @@ public class Order {
                 .sum();
 
         if (expectedTotal != totalAmount.value()) {
-            throw new InvalidTotalAmountException(expectedTotal, totalAmount.value());
+            throw new OrderException.InvalidTotalAmountException(expectedTotal, totalAmount.value());
         }
 
         Order order = new Order();
@@ -69,21 +66,21 @@ public class Order {
 
     public void cancel() {
         if (!status.canCancel()) {
-            throw new InvalidOrderStateException(status, "cancel()");
+            throw new OrderException.InvalidStateException(status, "cancel()");
         }
         this.status = OrderStatus.CANCELLED;
     }
 
     public void markConfirmed() {
         if (!status.canConfirm()) {
-            throw new InvalidOrderStateException(status, "markConfirmed()");
+            throw new OrderException.InvalidStateException(status, "markConfirmed()");
         }
         this.status = OrderStatus.CONFIRMED;
     }
 
     public void validatePayable() {
         if (status != OrderStatus.CREATED) {
-            throw new InvalidOrderStateException(status, "payment");
+            throw new OrderException.InvalidStateException(status, "payment");
         }
     }
 }

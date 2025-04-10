@@ -1,8 +1,6 @@
 package kr.hhplus.be.server.domain.product;
 
 import kr.hhplus.be.server.common.vo.Money;
-import kr.hhplus.be.server.domain.product.exception.DescriptionTooLongException;
-import kr.hhplus.be.server.domain.product.exception.ProductNotReleasedException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -42,7 +40,7 @@ class ProductTest {
 
         // expect
         assertThatThrownBy(() -> product.updateDescription(longDesc))
-                .isInstanceOf(DescriptionTooLongException.class)
+                .isInstanceOf(ProductException.DescriptionTooLongException.class)
                 .hasMessageContaining("500자");
     }
 
@@ -71,7 +69,7 @@ class ProductTest {
         );
 
         assertThatThrownBy(() -> notReleased.validateOrderable(5))
-                .isInstanceOf(ProductNotReleasedException.class)
+                .isInstanceOf(ProductException.NotReleasedException.class)
                 .hasMessageContaining("출시되지 않은");
     }
 
@@ -79,7 +77,7 @@ class ProductTest {
     @DisplayName("재고가 없으면 주문할 수 없다")
     void validateOrderable_fail_whenStockIsZero() {
         assertThatThrownBy(() -> product.validateOrderable(0))
-                .isInstanceOf(ProductOutOfStockException.class)
+                .isInstanceOf(ProductException.OutOfStockException.class)
                 .hasMessageContaining("재고가 부족");
     }
 

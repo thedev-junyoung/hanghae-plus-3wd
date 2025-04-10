@@ -3,9 +3,8 @@ package kr.hhplus.be.server.application.payment;
 import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.payment.Payment;
+import kr.hhplus.be.server.domain.payment.PaymentException;
 import kr.hhplus.be.server.domain.payment.PaymentRepository;
-import kr.hhplus.be.server.domain.payment.exception.PaymentNotFoundException;
-import kr.hhplus.be.server.domain.payment.exception.UnsupportedPaymentMethodException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -41,7 +40,7 @@ public class PaymentService {
         if ("BALANCE".equalsIgnoreCase(method)) {
             return balancePaymentProcessor;
         }
-        throw new UnsupportedPaymentMethodException(method);
+        throw new PaymentException.UnsupportedMethodException(method);
     }
 
     public Payment getByPgTraansactionId(String pgTransactionId) {
@@ -51,7 +50,7 @@ public class PaymentService {
                         Money.wons(payment.getAmount()),
                         payment.getMethod()
                 ))
-                .orElseThrow(() -> new PaymentNotFoundException(pgTransactionId));
+                .orElseThrow(() -> new PaymentException.NotFoundException(pgTransactionId));
     }
 }
 

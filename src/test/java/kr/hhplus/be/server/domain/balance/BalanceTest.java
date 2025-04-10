@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.domain.balance;
 
-import kr.hhplus.be.server.domain.balance.exception.NotEnoughBalanceException;
 import kr.hhplus.be.server.common.vo.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -35,7 +34,7 @@ class BalanceTest {
         Balance balance = Balance.createNew(1L, 100L, Money.wons(500));
 
         assertThatThrownBy(() -> balance.decrease(Money.wons(600)))
-                .isInstanceOf(NotEnoughBalanceException.class);
+                .isInstanceOf(BalanceException.NotEnoughBalanceException.class);
     }
 
     @Test

@@ -1,12 +1,7 @@
 package kr.hhplus.be.server.application.product;
 
 import kr.hhplus.be.server.common.vo.Money;
-import kr.hhplus.be.server.domain.product.Product;
-import kr.hhplus.be.server.domain.product.ProductRepository;
-import kr.hhplus.be.server.domain.product.ProductStock;
-import kr.hhplus.be.server.domain.product.ProductStockRepository;
-import kr.hhplus.be.server.domain.product.exception.InsufficientStockException;
-import kr.hhplus.be.server.domain.product.exception.ProductNotFoundException;
+import kr.hhplus.be.server.domain.product.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,7 +64,7 @@ class ProductServiceTest {
 
         // when & then
         assertThatThrownBy(() -> productService.getProductDetail(new GetProductDetailCommand(99L)))
-                .isInstanceOf(ProductNotFoundException.class);
+                .isInstanceOf(ProductException.NotFoundException.class);
     }
 
     @Test
@@ -111,6 +106,6 @@ class ProductServiceTest {
         // when & then
         assertThatThrownBy(() ->
                 productService.decreaseStock(new DecreaseStockCommand(1L, 260, 5)))
-                .isInstanceOf(InsufficientStockException.class);
+                .isInstanceOf(ProductException.InsufficientStockException.class);
     }
 }

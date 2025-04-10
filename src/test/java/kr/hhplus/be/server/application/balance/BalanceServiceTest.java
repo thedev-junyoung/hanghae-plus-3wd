@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.application.balance;
 
 import kr.hhplus.be.server.domain.balance.Balance;
-import kr.hhplus.be.server.domain.balance.exception.NotEnoughBalanceException;
+import kr.hhplus.be.server.domain.balance.BalanceException;
 import kr.hhplus.be.server.domain.balance.BalanceRepository;
 import kr.hhplus.be.server.common.vo.Money;
 import org.junit.jupiter.api.DisplayName;
@@ -79,7 +79,7 @@ class BalanceServiceTest {
 
         // when & then
         assertThatThrownBy(() -> balanceService.decreaseBalance(command))
-                .isInstanceOf(NotEnoughBalanceException.class);
+                .isInstanceOf(BalanceException.NotEnoughBalanceException.class);
 
         verify(balanceRepository, never()).save(any());
     }

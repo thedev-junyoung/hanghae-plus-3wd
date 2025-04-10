@@ -10,7 +10,7 @@ class OrderItemTest {
 
     @Test
     @DisplayName("총 가격을 계산할 수 있다")
-    void calculateTotalPrice() {
+    void calculate_total_price() {
         // given
         OrderItem item = OrderItem.of(1L, 3, 270, Money.wons(10000));
 

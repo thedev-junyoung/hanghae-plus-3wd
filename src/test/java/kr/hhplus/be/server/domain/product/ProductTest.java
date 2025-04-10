@@ -21,7 +21,7 @@ class ProductTest {
 
     @Test
     @DisplayName("설명을 정상적으로 수정할 수 있다")
-    void updateDescription_success() {
+    void update_description_success() {
         // given
         String newDesc = "변경된 설명입니다.";
 
@@ -34,7 +34,7 @@ class ProductTest {
 
     @Test
     @DisplayName("설명이 500자를 초과하면 예외가 발생한다")
-    void updateDescription_fail_whenTooLong() {
+    void update_description_fail_when_too_long() {
         // given
         String longDesc = "a".repeat(501);
 
@@ -46,19 +46,19 @@ class ProductTest {
 
     @Test
     @DisplayName("출시일이 오늘 이전이면 출시된 상품으로 간주한다")
-    void isReleased_shouldReturnTrue_whenReleasedDatePassed() {
+    void is_released_should_return_true_when_released_date_passed() {
         assertThat(product.isReleased()).isTrue();
     }
 
     @Test
     @DisplayName("재고가 있고 출시되었으면 주문 가능하다")
-    void validateOrderable_success() {
+    void validate_orderable_success() {
         assertThatCode(() -> product.validateOrderable(10)).doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("출시되지 않은 상품은 주문할 수 없다")
-    void validateOrderable_fail_whenNotReleased() {
+    void validate_orderable_fail_when_not_released() {
         Product notReleased = Product.create(
                 "NEW SHOE",
                 "NIKE",
@@ -75,7 +75,7 @@ class ProductTest {
 
     @Test
     @DisplayName("재고가 없으면 주문할 수 없다")
-    void validateOrderable_fail_whenStockIsZero() {
+    void validate_orderable_fail_when_stock_is_zero() {
         assertThatThrownBy(() -> product.validateOrderable(0))
                 .isInstanceOf(ProductException.OutOfStockException.class)
                 .hasMessageContaining("재고가 부족");
@@ -83,7 +83,7 @@ class ProductTest {
 
     @Test
     @DisplayName("브랜드명이 일치하면 true를 반환한다 (대소문자 무시)")
-    void isSameBrand_shouldReturnTrue_whenMatchingIgnoreCase() {
+    void is_same_brand_should_return_true_when_matching_ignore_case() {
         assertThat(product.isSameBrand("nike")).isTrue();
         assertThat(product.isSameBrand("NIKE")).isTrue();
         assertThat(product.isSameBrand("adidas")).isFalse();

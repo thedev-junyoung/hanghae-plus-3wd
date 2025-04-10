@@ -35,19 +35,20 @@ class BalanceServiceTest {
         when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(existing));
         when(balanceRepository.save(eq(existing))).thenReturn(existing); // eq로 명시적 비교
 
-        ChargeBalanceCommand command = new ChargeBalanceCommand(100L, 500);
+        ChargeBalanceCommand command = new ChargeBalanceCommand(100L, 1000);
 
         // when
         BalanceInfo info = balanceService.charge(command);
 
         // then
-        assertThat(info.amount()).isEqualTo(1500L);
+        assertThat(info.amount()).isEqualTo(2000L);
         verify(balanceRepository).save(existing);
     }
 
+
     @Test
     @DisplayName("잔액을 차감할 수 있다")
-    void decrease_success() {
+    void decreaseSuccess() {
         // given
         Balance existing = Balance.createNew(1L, 100L, Money.wons(1000));
         when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(existing));

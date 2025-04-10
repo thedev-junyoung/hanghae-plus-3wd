@@ -1,6 +1,8 @@
 package kr.hhplus.be.server.domain.coupon;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.domain.coupon.exception.CouponAlreadyExhaustedException;
+import kr.hhplus.be.server.domain.coupon.exception.CouponExpiredException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -19,7 +21,7 @@ public class Coupon {
     @Column(nullable = false, unique = true)
     private String code;
 
-    @Enumerated(EnumType.STRING) // ← 중요!
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private CouponType type;
 
@@ -49,20 +51,41 @@ public class Coupon {
         this.validUntil = validUntil;
     }
 
+    public static Coupon create(String code, CouponType type, Integer discountRate, Integer totalQuantity,
+                                 LocalDateTime validFrom, LocalDateTime validUntil) {
+        return new Coupon(code, type, discountRate, totalQuantity, totalQuantity, validFrom, validUntil);
+    }
+
+
     public boolean isExpired() {
-        return validUntil.isBefore(LocalDateTime.now());
+        return Policy.isExpired(validUntil);
     }
 
     public boolean isExhausted() {
-        return remainingQuantity <= 0;
+        return Policy.isExhausted(remainingQuantity);
+    }
+
+    public void validateUsable() {
+        if (isExpired()) {
+            throw new CouponExpiredException();
+        }
+        if (isExhausted()) {
+            throw new CouponAlreadyExhaustedException();
+        }
     }
 
     public void decreaseQuantity() {
-        if (isExhausted()) {
-            throw new IllegalStateException("쿠폰이 모두 소진되었습니다.");
-        }
+        validateUsable();
         this.remainingQuantity -= 1;
     }
+
+    static class Policy {
+        public static boolean isExpired(LocalDateTime until) {
+            return LocalDateTime.now().isAfter(until);
+        }
+
+        public static boolean isExhausted(int quantity) {
+            return quantity <= 0;
+        }
+    }
 }
-
-

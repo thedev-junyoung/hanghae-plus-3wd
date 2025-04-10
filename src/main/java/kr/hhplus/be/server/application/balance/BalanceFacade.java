@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.application.balance;
 
-import kr.hhplus.be.server.domain.balance.BalanceChangeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

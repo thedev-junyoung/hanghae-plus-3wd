@@ -1,6 +1,5 @@
 package kr.hhplus.be.server.application.balance;
 
-import kr.hhplus.be.server.domain.balance.Balance;
 
 import java.time.LocalDateTime;
 

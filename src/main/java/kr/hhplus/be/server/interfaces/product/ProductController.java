@@ -16,6 +16,7 @@ import java.util.List;
 public class ProductController implements ProductAPI {
 
     private final ProductUseCase productUseCase;
+    private final ProductFacade productFacade;
 
     @Override
     public ResponseEntity<CustomApiResponse<ProductResponse.ProductListResponse>> getProducts(int page, int size, String sort) {
@@ -31,11 +32,16 @@ public class ProductController implements ProductAPI {
 
     @Override
     public ResponseEntity<CustomApiResponse<List<ProductResponse.PopularProductResponse>>> getPopularProducts() {
-        List<PopularProductResult> result = productUseCase.getPopularProducts();
+        PopularProductCriteria criteria = new PopularProductCriteria(3, 5); // 최근 3일, 상위 5개
+        List<PopularProductResult> result = productFacade.getPopularProducts(criteria);
+
         return ResponseEntity.ok(CustomApiResponse.success(
-                result.stream().map(ProductResponse.PopularProductResponse::from).toList()
+                result.stream()
+                        .map(ProductResponse.PopularProductResponse::from)
+                        .toList()
         ));
     }
+
 
 
 }

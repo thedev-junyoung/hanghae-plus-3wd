@@ -10,13 +10,13 @@ public record PopularProductResult(
         BigDecimal price,
         int salesCount
 ) {
-    public static PopularProductResult from(Product product) {
+    public static PopularProductResult from(Product product, int salesCount) {
         return new PopularProductResult(
                 product.getId(),
                 product.getName(),
-                product.getPrice().value(),
-                0 // salesCount는 별도 로직에서 가져와야 함
+                product.getPrice(),
+                salesCount
         );
     }
-
 }
+

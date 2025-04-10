@@ -19,7 +19,7 @@ public record ProductResult(
         return new ProductResult(
                 product.getId(),
                 product.getName(),
-                product.getPrice().value(),
+                product.getPrice(),
                 product.getReleaseDate(),
                 product.getImageUrl(),
                 product.getCreatedAt(),

@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -27,8 +28,8 @@ public class Product {
     @Column(nullable = false)
     private String brand;
 
-    @Embedded
-    private Money price;
+    @Column(nullable = false)
+    private BigDecimal price;
 
     @Column(nullable = false)
     private LocalDate releaseDate;
@@ -49,7 +50,7 @@ public class Product {
         Product product = new Product();
         product.name = name;
         product.brand = brand;
-        product.price = price;
+        product.price = price.value();
         product.releaseDate = releaseDate;
         product.imageUrl = imageUrl;
         product.description = description;

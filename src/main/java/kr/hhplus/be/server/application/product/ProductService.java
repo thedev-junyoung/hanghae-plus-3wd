@@ -37,13 +37,6 @@ public class ProductService implements ProductUseCase {
     }
 
     @Override
-    public List<PopularProductResult> getPopularProducts() {
-        return productRepository.findTopSellingProducts().stream()
-                .map(PopularProductResult::from)
-                .toList();
-    }
-
-    @Override
     public boolean decreaseStock(DecreaseStockCommand command) {
         Product product = productRepository.findById(command.productId())
                 .orElseThrow(() -> new ProductNotFoundException(command.productId()));
@@ -55,5 +48,12 @@ public class ProductService implements ProductUseCase {
 
         productStockRepository.save(stock);
         return true;
+    }
+
+
+    @Override
+    public Product findProduct(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException(productId));
     }
 }

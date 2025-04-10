@@ -1,7 +1,9 @@
 package kr.hhplus.be.server.domain.order;
 
 import kr.hhplus.be.server.common.vo.Money;
+import kr.hhplus.be.server.domain.order.exception.EmptyOrderItemException;
 import kr.hhplus.be.server.domain.order.exception.InvalidOrderStateException;
+import kr.hhplus.be.server.domain.order.exception.InvalidTotalAmountException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -9,6 +11,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class OrderTest {
@@ -76,5 +79,41 @@ class OrderTest {
         order.markConfirmed(); // CONFIRMED 상태
 
         assertThrows(InvalidOrderStateException.class, order::markConfirmed);
+    }
+
+    @Test
+    @DisplayName("주문 아이템이 비어있으면 주문 생성에 실패한다")
+    void createOrder_shouldFail_whenNoItems() {
+        assertThatThrownBy(() ->
+                Order.create("order-id", 1L, List.of(), Money.wons(0))
+        ).isInstanceOf(EmptyOrderItemException.class);
+    }
+
+    @Test
+    @DisplayName("총 주문 금액은 각 아이템의 금액 * 수량의 합과 일치해야 한다")
+    void createOrder_totalAmount_shouldMatchSumOfItems() {
+        List<OrderItem> items = List.of(
+                OrderItem.of(1L, 2, 270, Money.wons(50000)), // 2 * 50,000 = 100,000
+                OrderItem.of(2L, 1, 270, Money.wons(70000))  // 1 * 70,000 = 70,000
+        );
+
+        // 총 합계: 170,000
+        Order order = Order.create("order-id", 1L, items, Money.wons(170000));
+
+        assertThat(order.getTotalAmount()).isEqualTo(170000);
+    }
+
+    @Test
+    @DisplayName("총 주문 금액이 실제 합계와 다르면 생성할 수 없다 (정책 위반)")
+    void createOrder_shouldFail_whenTotalAmountMismatch() {
+        List<OrderItem> items = List.of(
+                OrderItem.of(1L, 2, 270, Money.wons(100000)) // 2개니까 총 200000이어야 함
+        );
+
+        assertThatThrownBy(() ->
+                Order.create("order-id", 1L, items, Money.wons(150000))
+        ).isInstanceOf(InvalidTotalAmountException.class)
+                .hasMessageContaining("expected=200000")
+                .hasMessageContaining("actual=150000");
     }
 }

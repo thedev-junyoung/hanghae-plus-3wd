@@ -29,13 +29,13 @@ public enum ErrorCode {
 
     // 주문 관련 에러
     ORDER_NOT_FOUND(HttpStatus.NOT_FOUND,  "주문을 찾을 수 없습니다."),
-    INVALID_ORDER_STATE(HttpStatus.BAD_REQUEST,  "유효하지 않은 주문 상태입니다."),
-    INVALID_ORDER_ITEM(HttpStatus.BAD_REQUEST,  "유효하지 않은 주문 상품입니다."),
     INVALID_ORDER_STATUS(HttpStatus.UNPROCESSABLE_ENTITY,  "유효하지 않은 주문 상태입니다."),
+
     // 잔액 관련 에러
     INSUFFICIENT_BALANCE(HttpStatus.UNPROCESSABLE_ENTITY,  "잔액이 부족합니다."),
     INVALID_AMOUNT(HttpStatus.BAD_REQUEST,  "유효하지 않은 금액입니다."),
     BALANCE_UPDATE_FAILED(HttpStatus.CONFLICT,  "잔액 업데이트에 실패했습니다."),
+    BALANCE_NOT_FOUND(HttpStatus.NOT_FOUND,  "잔액 정보를 찾을 수 없습니다."),
 
     // 쿠폰 관련 에러
     COUPON_NOT_FOUND(HttpStatus.NOT_FOUND,  "쿠폰을 찾을 수 없습니다."),
@@ -51,6 +51,9 @@ public enum ErrorCode {
     // 결제 관련
     PAYMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "결제 정보를 찾을 수 없습니다."),
     PAYMENT_ALREADY_PROCESSED(HttpStatus.CONFLICT, "이미 처리된 결제입니다."),
+    UNSUPPORTED_PAYMENT_METHOD(HttpStatus.UNPROCESSABLE_ENTITY, "지원하지 않는 결제 수단입니다."),
+    PAYMENT_PROCESSING_FAILED(HttpStatus.UNPROCESSABLE_ENTITY, "결제 처리에 실패했습니다."),
+    INVALID_PAYMENT_STATUS(HttpStatus.UNPROCESSABLE_ENTITY, "유효하지 않은 결제 상태입니다."),
 
     // 인증 관련
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN, "인증되지 않은 접근입니다."),

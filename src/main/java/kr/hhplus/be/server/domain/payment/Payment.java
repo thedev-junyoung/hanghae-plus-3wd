@@ -3,11 +3,11 @@ package kr.hhplus.be.server.domain.payment;
 import jakarta.persistence.*;
 import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.payment.exception.InvalidPaymentStateException;
+import kr.hhplus.be.server.domain.payment.exception.MismatchedPaymentAmountException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
- 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -72,5 +72,11 @@ public class Payment {
 
     public boolean isCompleted() {
         return status == PaymentStatus.SUCCESS;
+    }
+
+    public void validateAmount(Money expected) {
+        if (!expected.equals(Money.wons(this.amount))) {
+            throw new MismatchedPaymentAmountException(expected.value(), this.amount);
+        }
     }
 }

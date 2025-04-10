@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.payment;
 
 import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.payment.exception.InvalidPaymentStateException;
+import kr.hhplus.be.server.domain.payment.exception.MismatchedPaymentAmountException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -65,4 +66,16 @@ class PaymentTest {
                 .isInstanceOf(InvalidPaymentStateException.class)
                 .hasMessageContaining("실패 처리할 수 없는 결제 상태입니다.");
     }
+
+    @Test
+    @DisplayName("결제 금액이 예상 값과 다르면 예외 발생")
+    void validateAmount_shouldFail_whenMismatch() {
+        Payment payment = Payment.initiate("order-123", Money.wons(15000), "BALANCE");
+
+        assertThatThrownBy(() -> payment.validateAmount(Money.wons(10000)))
+                .isInstanceOf(MismatchedPaymentAmountException.class)
+                .hasMessageContaining("expected=10000")
+                .hasMessageContaining("actual=15000");
+    }
+
 }

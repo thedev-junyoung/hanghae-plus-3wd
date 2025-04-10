@@ -38,7 +38,7 @@ class ProductFacadeTest {
         when(statisticsUseCase.getTopSellingProducts(criteria))
                 .thenReturn(List.of(info));
 
-        Product mockProduct = mockProduct();
+        Product mockProduct = mockProduct(139000L);
         when(productUseCase.findProduct(1L)).thenReturn(mockProduct);
 
         // when
@@ -56,11 +56,11 @@ class ProductFacadeTest {
         verify(productUseCase).findProduct(1L);
     }
 
-    private Product mockProduct() {
+    private Product mockProduct(long price) {
         Product product = mock(Product.class);
         when(product.getId()).thenReturn(1L);
         when(product.getName()).thenReturn("NIKE DUNK");
-        when(product.getPrice()).thenReturn(139000L);
+        when(product.getPrice()).thenReturn(price);
         when(product.getReleaseDate()).thenReturn(LocalDate.now());
         when(product.getCreatedAt()).thenReturn(LocalDateTime.now());
         when(product.getUpdatedAt()).thenReturn(LocalDateTime.now());

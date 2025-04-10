@@ -1,13 +1,14 @@
 package kr.hhplus.be.server.domain.product;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.common.exception.ErrorCode;
 import kr.hhplus.be.server.common.vo.Money;
+import kr.hhplus.be.server.domain.product.exception.*;
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
- 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -16,6 +17,8 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Product {
+
+    private static final int MAX_DESCRIPTION_LENGTH = 500;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,6 +49,10 @@ public class Product {
 
     public static Product create(String name, String brand, Money price,
                                  LocalDate releaseDate, String imageUrl, String description) {
+        if (description != null && description.length() > MAX_DESCRIPTION_LENGTH) {
+            throw new DescriptionTooLongException(MAX_DESCRIPTION_LENGTH);
+        }
+
         LocalDateTime now = LocalDateTime.now();
         Product product = new Product();
         product.name = name;
@@ -58,20 +65,28 @@ public class Product {
         product.updatedAt = now;
         return product;
     }
+
     public void updateDescription(String newDescription) {
-        if (newDescription != null && newDescription.length() > 500) {
-            throw new IllegalArgumentException("설명은 500자를 초과할 수 없습니다.");
+        if (newDescription != null && newDescription.length() > MAX_DESCRIPTION_LENGTH) {
+            throw new DescriptionTooLongException(MAX_DESCRIPTION_LENGTH);
         }
         this.description = newDescription;
         this.updatedAt = LocalDateTime.now();
     }
+
     public boolean isReleased() {
         return !releaseDate.isAfter(LocalDate.now());
     }
 
-    public boolean isAvailable(int totalStock) {
-        return isReleased() && totalStock > 0;
+    public void validateOrderable(int totalStock) {
+        if (!isReleased()) {
+            throw new ProductNotReleasedException(this.id);
+        }
+        if (totalStock <= 0) {
+            throw new ProductOutOfStockException(this.id);
+        }
     }
+
     public boolean isSameBrand(String brandName) {
         return this.brand.equalsIgnoreCase(brandName);
     }

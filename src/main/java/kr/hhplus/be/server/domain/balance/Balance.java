@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.balance;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.balance.exception.NotEnoughBalanceException;
+import kr.hhplus.be.server.domain.balance.exception.MinimumChargeAmountException;
 import kr.hhplus.be.server.common.vo.Money;
 import lombok.*;
 
@@ -44,6 +45,7 @@ public class Balance {
     }
 
     public void charge(Money value) {
+        Policy.validateMinimumCharge(value);
         Money current = Money.wons(amount);
         Money charged = current.add(value);
         this.amount = charged.value();
@@ -61,5 +63,16 @@ public class Balance {
 
     public boolean hasEnough(Money value) {
         return Money.wons(amount).isGreaterThanOrEqual(value);
+    }
+
+    // 💡 정책 내장 클래스
+    public static class Policy {
+        private static final long MINIMUM_CHARGE_AMOUNT = 1_000;
+
+        public static void validateMinimumCharge(Money amount) {
+            if (amount.value() < MINIMUM_CHARGE_AMOUNT) {
+                throw new MinimumChargeAmountException(MINIMUM_CHARGE_AMOUNT);
+            }
+        }
     }
 }

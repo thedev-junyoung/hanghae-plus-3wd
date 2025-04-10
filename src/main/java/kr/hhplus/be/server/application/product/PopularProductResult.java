@@ -2,7 +2,6 @@ package kr.hhplus.be.server.application.product;
 
 import kr.hhplus.be.server.domain.product.Product;
 
-import java.math.BigDecimal;
 
 public record PopularProductResult(
         Long id,

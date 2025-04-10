@@ -3,7 +3,6 @@ package kr.hhplus.be.server.domain.balance;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity

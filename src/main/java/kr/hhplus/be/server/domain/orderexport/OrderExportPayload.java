@@ -4,7 +4,6 @@ import kr.hhplus.be.server.domain.order.Order;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 @Getter

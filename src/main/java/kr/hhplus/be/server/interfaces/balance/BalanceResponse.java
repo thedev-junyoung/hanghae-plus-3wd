@@ -3,7 +3,6 @@ package kr.hhplus.be.server.interfaces.balance;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Getter

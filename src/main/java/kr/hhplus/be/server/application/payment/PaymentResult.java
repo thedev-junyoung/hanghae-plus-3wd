@@ -2,7 +2,6 @@ package kr.hhplus.be.server.application.payment;
 
 import kr.hhplus.be.server.domain.payment.PaymentStatus;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record PaymentResult(

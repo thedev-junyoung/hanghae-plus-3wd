@@ -99,7 +99,7 @@ class OrderFacadeServiceTest {
         when(productService.getProductDetail(new GetProductDetailCommand(1L)))
                 .thenReturn(new ProductDetailResult(product));
 
-        doThrow(new InsufficientStockException())
+        doThrow(new InsufficientStockException("재고가 부족합니다."))
                 .when(productService).decreaseStock(new DecreaseStockCommand(1L, 270, 5));
 
         // When & Then

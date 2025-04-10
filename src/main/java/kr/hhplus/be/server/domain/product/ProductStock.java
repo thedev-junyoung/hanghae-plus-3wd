@@ -16,9 +16,13 @@ public class ProductStock {
 
     @Id
     private Long id;
+
     private Long productId;
+
     private int size;
+
     private int stockQuantity;
+
     private LocalDateTime updatedAt;
 
     public ProductStock(Long productId, int size, int stockQuantity) {
@@ -39,15 +43,24 @@ public class ProductStock {
     }
 
     public void decreaseStock(int quantity) {
-        if (stockQuantity < quantity) {
-            throw new InsufficientStockException();
+        if (!Policy.canDecrease(stockQuantity, quantity)) {
+            throw new InsufficientStockException("재고가 부족합니다. 현재: " + stockQuantity + ", 요청: " + quantity);
         }
         this.stockQuantity -= quantity;
         this.updatedAt = LocalDateTime.now();
     }
 
     public boolean isAvailable(int quantity) {
-        return stockQuantity >= quantity;
+        return Policy.canDecrease(stockQuantity, quantity);
     }
 
+    static class Policy {
+
+        // 재고는 0 이상이어야 한다
+        public static boolean canDecrease(int currentStock, int requestQuantity) {
+            return currentStock >= requestQuantity;
+        }
+
+        // 사이즈별 관리 - 외부에서 사이즈 파라미터로 관리됨 (도메인 설계로 분리되어 있음)
+    }
 }

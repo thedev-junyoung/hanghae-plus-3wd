@@ -12,18 +12,13 @@ public class BalanceFacade {
     private final BalanceUseCase balanceUseCase;
     private final BalanceHistoryUseCase historyUseCase;
 
-    public BalanceResult chargeAndRecord(ChargeBalanceCriteria criteria) {
-        BalanceInfo info = balanceUseCase.charge(
-                new ChargeBalanceCommand(criteria.userId(), criteria.amount())
-        );
+    public BalanceResult charge(ChargeBalanceCriteria criteria) {
+        ChargeBalanceCommand command = ChargeBalanceCommand.from(criteria);
+
+        BalanceInfo info = balanceUseCase.charge(command);
 
         historyUseCase.recordHistory(
-                new RecordBalanceHistoryCommand(
-                        criteria.userId(),
-                        criteria.amount(),
-                        BalanceChangeType.CHARGE,
-                        criteria.reason()
-                )
+                RecordBalanceHistoryCommand.of(criteria)
         );
 
         return BalanceResult.fromInfo(info);

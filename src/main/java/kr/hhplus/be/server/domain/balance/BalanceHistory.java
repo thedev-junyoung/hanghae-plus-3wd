@@ -1,6 +1,7 @@
 package kr.hhplus.be.server.domain.balance;
 
 import jakarta.persistence.*;
+import kr.hhplus.be.server.application.balance.RecordBalanceHistoryCommand;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -42,6 +43,17 @@ public class BalanceHistory {
 
     public static BalanceHistory of(Long userId, long amount, BalanceChangeType type, String reason) {
         return new BalanceHistory(userId, amount, type, reason, LocalDateTime.now());
+    }
+
+    public static BalanceHistory of(RecordBalanceHistoryCommand command) {
+        return new BalanceHistory(
+                command.userId(),
+                command.amount(),
+                command.type(),
+                command.reason(),
+                LocalDateTime.now()
+        );
+
     }
 
     public boolean isChargeHistory() {

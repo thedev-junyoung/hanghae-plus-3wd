@@ -17,11 +17,5 @@ public record BalanceResult(
         );
     }
 
-    public static BalanceResult fromDomain(Balance balance) {
-        return new BalanceResult(
-                balance.getUserId(),
-                balance.getAmount(), // Money 내부 값 꺼냄
-                balance.getUpdatedAt()
-        );
-    }
+
 }

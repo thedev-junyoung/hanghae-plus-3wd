@@ -13,12 +13,7 @@ public class BalanceHistoryService implements BalanceHistoryUseCase {
 
     @Override
     public void recordHistory(RecordBalanceHistoryCommand command) {
-        BalanceHistory history = BalanceHistory.of(
-                command.userId(),
-                command.amount(),
-                command.type(),
-                command.reason()
-        );
+        BalanceHistory history = BalanceHistory.of(command);
         repository.save(history);
     }
 }

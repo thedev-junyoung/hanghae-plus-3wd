@@ -21,13 +21,9 @@ public class BalanceController implements BalanceAPI{
 
     @PostMapping("/charge")
     public ResponseEntity<CustomApiResponse<BalanceResponse>> charge(@Valid @RequestBody BalanceRequest request) {
-        ChargeBalanceCriteria criteria = new ChargeBalanceCriteria(
-                request.getUserId(),
-                request.getAmount(),
-                "사용자 요청에 따른 충전" // 혹은 request.getReason() 받아서 넘겨도 됨
-        );
+        ChargeBalanceCriteria criteria = ChargeBalanceCriteria.fromRequest(request);
 
-        BalanceResult result = balanceFacade.chargeAndRecord(criteria);
+        BalanceResult result = balanceFacade.charge(criteria);
 
         return ResponseEntity.ok(CustomApiResponse.success(
                 new BalanceResponse(result.userId(), result.balance(), result.updatedAt())

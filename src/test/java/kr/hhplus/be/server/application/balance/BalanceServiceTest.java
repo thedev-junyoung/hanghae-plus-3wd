@@ -84,4 +84,15 @@ class BalanceServiceTest {
 
         verify(balanceRepository, never()).save(any());
     }
+    @Test
+    @DisplayName("잔액을 조회할 수 있다")
+    void getBalance_success() {
+        Balance balance = Balance.createNew(1L, 100L, Money.wons(1500));
+        when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(balance));
+
+        BalanceResult result = balanceService.getBalance(100L);
+
+        assertThat(result.userId()).isEqualTo(100L);
+        assertThat(result.balance()).isEqualTo(1500L);
+    }
 }

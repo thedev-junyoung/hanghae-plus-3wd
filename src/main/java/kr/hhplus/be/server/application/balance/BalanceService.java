@@ -31,7 +31,7 @@ public class BalanceService implements BalanceUseCase {
         Balance balance = balanceRepository.findByUserId(userId)
                 .orElseThrow(() -> new BalanceException.NotFoundException(userId));
 
-        return BalanceResult.fromDomain(balance);
+        return BalanceResult.fromInfo(BalanceInfo.from(balance));
     }
 
     @Override

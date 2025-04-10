@@ -22,7 +22,6 @@ public class PaymentFacadeService {
     public PaymentResult requestPayment(RequestPaymentCommand command) {
         Money amount = Money.wons(command.amount());
 
-        // 주문 조회 한 번만!
         Order order = orderService.getOrderForPayment(command.orderId());
 
         balanceService.decreaseBalance(

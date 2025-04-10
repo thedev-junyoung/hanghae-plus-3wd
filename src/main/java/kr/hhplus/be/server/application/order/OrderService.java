@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 
+
 @Service
 @RequiredArgsConstructor
 public class OrderService {
@@ -29,7 +30,6 @@ public class OrderService {
     public Order getOrderForPayment(String orderId) {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new OrderException.NotFoundException(orderId));
-
         order.validatePayable();
         return order;
     }
@@ -40,3 +40,4 @@ public class OrderService {
         orderRepository.save(order);
     }
 }
+

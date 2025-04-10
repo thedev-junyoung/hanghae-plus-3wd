@@ -12,9 +12,8 @@ public class OrderEventService implements OrderEventUseCase {
 
     private final OrderEventRepository repository;
 
-    @Override
     public void recordPaymentCompletedEvent(Order order) {
-        OrderEvent event = OrderEvent.paymentCompleted(order);
+        OrderEvent event = OrderEvent.paymentCompleted(order);  // 📌 도메인 객체 사용
         repository.save(event);
     }
 }

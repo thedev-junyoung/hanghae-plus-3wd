@@ -6,17 +6,16 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
- 
+
 import java.time.LocalDateTime;
 import java.util.List;
 
-// 기존 import 그대로 유지
+
 @Entity
 @Table(name = "orders")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Order {
-
     @Id
     private String id;
 
@@ -31,9 +30,10 @@ public class Order {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private OrderStatus status;
 
+    private OrderStatus status;
     @Column(nullable = false, updatable = false)
+
     private LocalDateTime createdAt;
 
     public static Order create(String id, Long userId, List<OrderItem> items, Money totalAmount) {

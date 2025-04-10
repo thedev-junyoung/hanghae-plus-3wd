@@ -2,8 +2,6 @@ package kr.hhplus.be.server.application.order;
 
 import kr.hhplus.be.server.common.vo.Money;
 import org.springframework.transaction.annotation.Transactional;
-import kr.hhplus.be.server.application.balance.BalanceService;
-import kr.hhplus.be.server.application.balance.DecreaseBalanceCommand;
 import kr.hhplus.be.server.application.product.DecreaseStockCommand;
 import kr.hhplus.be.server.application.product.GetProductDetailCommand;
 import kr.hhplus.be.server.application.product.ProductDetailResult;
@@ -21,7 +19,6 @@ import java.util.List;
 public class OrderFacadeService implements OrderUseCase {
 
     private final ProductService productService;
-    private final BalanceService balanceService;
     private final OrderService orderService;
     private final OrderEventService orderEventService;
 
@@ -53,18 +50,15 @@ public class OrderFacadeService implements OrderUseCase {
             total = total.add(itemTotal);
         }
 
-        // 3. 사용자 잔액 차감
-        balanceService.decreaseBalance(
-                new DecreaseBalanceCommand(command.userId(), total.value())
-        );
 
-        // 4. 주문 생성 및 저장
+
+        // 3. 주문 생성 및 저장
         Order order = orderService.createOrder(command.userId(), orderItems, total);
 
-        // 5. 결제 완료 이벤트 발행 (Outbox 패턴 기반 처리)
+        // 4. 결제 완료 이벤트 발행 (Outbox 패턴 기반 처리)
         orderEventService.recordPaymentCompletedEvent(order);
 
-        // 6. 응답 객체 반환
+        // 5. 응답 객체 반환
         return OrderResult.from(order);
     }
 }

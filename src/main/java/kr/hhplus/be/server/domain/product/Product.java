@@ -58,5 +58,21 @@ public class Product {
         product.updatedAt = now;
         return product;
     }
+    public void updateDescription(String newDescription) {
+        if (newDescription != null && newDescription.length() > 500) {
+            throw new IllegalArgumentException("설명은 500자를 초과할 수 없습니다.");
+        }
+        this.description = newDescription;
+        this.updatedAt = LocalDateTime.now();
+    }
+    public boolean isReleased() {
+        return !releaseDate.isAfter(LocalDate.now());
+    }
 
+    public boolean isAvailable(int totalStock) {
+        return isReleased() && totalStock > 0;
+    }
+    public boolean isSameBrand(String brandName) {
+        return this.brand.equalsIgnoreCase(brandName);
+    }
 }

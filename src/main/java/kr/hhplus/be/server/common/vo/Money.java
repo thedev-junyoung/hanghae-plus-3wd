@@ -1,49 +1,40 @@
 package kr.hhplus.be.server.common.vo;
 
-import jakarta.persistence.Column;
-import lombok.Getter;
-
-import java.math.BigDecimal;
 import java.util.Objects;
 
-@Getter
 public class Money {
 
-    @Column(nullable = false)
-    private final BigDecimal value;
+    private final long value;
 
-    private Money(BigDecimal value) {
+    private Money(long value) {
         this.value = value;
     }
 
     public static Money wons(long amount) {
-        return new Money(BigDecimal.valueOf(amount));
-    }
-    public static Money wons(BigDecimal amount) {
         return new Money(amount);
     }
 
     public Money add(Money other) {
-        return new Money(this.value.add(other.value));
+        return new Money(this.value + other.value);
     }
 
     public Money subtract(Money other) {
-        return new Money(this.value.subtract(other.value));
+        return new Money(this.value - other.value);
     }
 
     public Money multiply(int multiplier) {
-        return new Money(this.value.multiply(BigDecimal.valueOf(multiplier)));
+        return new Money(this.value * multiplier);
     }
 
     public Money multiply(long multiplier) {
-        return new Money(this.value.multiply(BigDecimal.valueOf(multiplier)));
+        return new Money(this.value * multiplier);
     }
 
     public boolean isGreaterThanOrEqual(Money other) {
-        return this.value.compareTo(other.value) >= 0;
+        return this.value >= other.value;
     }
 
-    public BigDecimal value() {
+    public long value() {
         return value;
     }
 
@@ -51,7 +42,7 @@ public class Money {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (!(o instanceof Money money)) return false;
-        return Objects.equals(value, money.value);
+        return value == money.value;
     }
 
     @Override
@@ -61,6 +52,6 @@ public class Money {
 
     @Override
     public String toString() {
-        return String.valueOf(value);
+        return value + "원";
     }
 }

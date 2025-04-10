@@ -12,7 +12,7 @@ public record OrderResult(
         String orderId,
         Long userId,
         List<OrderItemResult> items,
-        BigDecimal totalAmount,
+        long totalAmount,
         OrderStatus status,
         LocalDateTime createdAt
 ) {
@@ -35,7 +35,7 @@ public record OrderResult(
             Long productId,
             int quantity,
             int size,
-            BigDecimal price
+            long price
     ) {
         public static OrderItemResult from(OrderItem item) {
             return new OrderItemResult(

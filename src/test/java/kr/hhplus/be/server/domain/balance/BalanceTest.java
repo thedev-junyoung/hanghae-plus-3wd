@@ -17,7 +17,7 @@ class BalanceTest {
         Balance balance = Balance.createNew(1L, 100L, Money.wons(1000));
         balance.charge(Money.wons(500));
 
-        assertThat(balance.getAmount()).isEqualTo(BigDecimal.valueOf(1500));
+        assertThat(balance.getAmount()).isEqualTo(1500L);
     }
 
     @Test
@@ -26,7 +26,7 @@ class BalanceTest {
         Balance balance = Balance.createNew(1L, 100L, Money.wons(1000));
         balance.decrease(Money.wons(300));
 
-        assertThat(balance.getAmount()).isEqualTo(BigDecimal.valueOf(700));
+        assertThat(balance.getAmount()).isEqualTo(700L);
     }
 
     @Test

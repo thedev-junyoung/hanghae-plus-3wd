@@ -22,8 +22,8 @@ public class Balance {
     @Column(nullable = false)
     private Long userId;
 
-    @Embedded
-    private BigDecimal amount;
+    @Column(nullable = false)
+    private long amount;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -35,7 +35,7 @@ public class Balance {
         LocalDateTime now = LocalDateTime.now();
         this.id = id;
         this.userId = userId;
-        this.amount = amount.getValue();
+        this.amount = amount.value();
         this.createdAt = now;
         this.updatedAt = now;
     }

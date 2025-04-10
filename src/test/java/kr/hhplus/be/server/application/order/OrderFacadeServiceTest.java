@@ -51,8 +51,8 @@ class OrderFacadeServiceTest {
         CreateOrderCommand.OrderItemCommand item2 = new CreateOrderCommand.OrderItemCommand(2L, 1, 280);
         CreateOrderCommand command = new CreateOrderCommand(100L, List.of(item1, item2));
 
-        ProductResult product1 = new ProductResult(1L, "Nike Air", BigDecimal.valueOf(100000), LocalDate.now(),  null, null, null);
-        ProductResult product2 = new ProductResult(2L, "Adidas Ultra", BigDecimal.valueOf(120000), LocalDate.now(),  null, null, null);
+        ProductResult product1 = new ProductResult(1L, "Nike Air", 100000L, LocalDate.now(),  null, null, null);
+        ProductResult product2 = new ProductResult(2L, "Adidas Ultra", 120000L, LocalDate.now(),  null, null, null);
 
         when(productService.getProductDetail(new GetProductDetailCommand(1L))).thenReturn(new ProductDetailResult(product1));
         when(productService.getProductDetail(new GetProductDetailCommand(2L))).thenReturn(new ProductDetailResult(product2));
@@ -70,7 +70,7 @@ class OrderFacadeServiceTest {
         // Then
         assertThat(result.orderId()).isEqualTo("order-id");
         assertThat(result.userId()).isEqualTo(100L);
-        assertThat(result.totalAmount()).isEqualTo(BigDecimal.valueOf(320000));
+        assertThat(result.totalAmount()).isEqualTo(320000L);
         assertThat(result.items()).hasSize(2);
         assertThat(result.items()).extracting("productId").containsExactlyInAnyOrder(1L, 2L);
 
@@ -93,7 +93,7 @@ class OrderFacadeServiceTest {
         CreateOrderCommand command = new CreateOrderCommand(100L, List.of(item));
 
         ProductResult product = new ProductResult(
-                1L, "Nike Air", BigDecimal.valueOf(100000), LocalDate.now(), null, null, null
+                1L, "Nike Air", 100000L, LocalDate.now(), null, null, null
         );
 
         when(productService.getProductDetail(new GetProductDetailCommand(1L)))

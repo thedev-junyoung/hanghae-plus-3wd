@@ -27,7 +27,7 @@ public class Order {
     private List<OrderItem> items;
 
     @Column(name = "total_amount", nullable = false)
-    private BigDecimal totalAmount;
+    private long totalAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -74,5 +74,5 @@ public class Order {
             throw new InvalidOrderStateException(status, "payment");
         }
     }
-
+  
 }

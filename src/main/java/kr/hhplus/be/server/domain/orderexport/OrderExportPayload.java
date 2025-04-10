@@ -13,7 +13,7 @@ public class OrderExportPayload {
     private final String orderId;
     private final Long userId;
     private final List<OrderItemPayload> items;
-    private final BigDecimal totalAmount;
+    private final long totalAmount;
 
     @Getter
     @AllArgsConstructor(staticName = "of")
@@ -21,7 +21,7 @@ public class OrderExportPayload {
         private final Long productId;
         private final int quantity;
         private final int size;
-        private final BigDecimal price;
+        private final long price;
     }
 
     public static OrderExportPayload from(Order order) {

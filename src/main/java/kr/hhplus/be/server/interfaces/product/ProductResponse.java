@@ -41,7 +41,7 @@ public class ProductResponse {
     public static class ProductSummary {
         private final Long id;
         private final String name;
-        private final BigDecimal price;
+        private final long price;
         private final LocalDate releaseDate;
         private final String imageUrl;
         private final LocalDateTime createdAt;
@@ -65,7 +65,7 @@ public class ProductResponse {
     public static class PopularProductResponse {
         private final Long id;
         private final String name;
-        private final BigDecimal price;
+        private final long price;
         private final int salesCount;
 
         public static PopularProductResponse from(PopularProductResult result) {

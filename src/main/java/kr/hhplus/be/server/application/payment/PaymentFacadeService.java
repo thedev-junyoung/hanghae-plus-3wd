@@ -48,7 +48,7 @@ public class PaymentFacadeService implements PaymentUseCase {
                         new RecordSalesCommand(
                                 item.getProductId(),
                                 item.getQuantity(),
-                                item.calculateTotal().value().longValue()
+                                item.calculateTotal().value()
                         )
                 )
         );

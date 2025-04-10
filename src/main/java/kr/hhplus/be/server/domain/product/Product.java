@@ -29,7 +29,7 @@ public class Product {
     private String brand;
 
     @Column(nullable = false)
-    private BigDecimal price;
+    private Long price;
 
     @Column(nullable = false)
     private LocalDate releaseDate;

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 public record PaymentResult(
         String paymentId,
         String orderId,
-        BigDecimal amount,
+        long amount,
         String method,
         PaymentStatus status,
         LocalDateTime createdAt

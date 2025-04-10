@@ -38,7 +38,7 @@ class ProductFacadeTest {
         when(statisticsUseCase.getTopSellingProducts(criteria))
                 .thenReturn(List.of(info));
 
-        Product mockProduct = mockProduct(1L, "NIKE DUNK", BigDecimal.valueOf(139000));
+        Product mockProduct = mockProduct(1L, "NIKE DUNK", 139000L);
         when(productUseCase.findProduct(1L)).thenReturn(mockProduct);
 
         // when
@@ -49,14 +49,14 @@ class ProductFacadeTest {
         PopularProductResult result = results.get(0);
         assertThat(result.id()).isEqualTo(1L);
         assertThat(result.name()).isEqualTo("NIKE DUNK");
-        assertThat(result.price()).isEqualTo(BigDecimal.valueOf(139000));
+        assertThat(result.price()).isEqualTo(139000L);
         assertThat(result.salesCount()).isEqualTo(10);
 
         verify(statisticsUseCase).getTopSellingProducts(criteria);
         verify(productUseCase).findProduct(1L);
     }
 
-    private Product mockProduct(Long id, String name, BigDecimal price) {
+    private Product mockProduct(Long id, String name,long price) {
         Product product = mock(Product.class);
         when(product.getId()).thenReturn(id);
         when(product.getName()).thenReturn(name);

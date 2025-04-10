@@ -55,7 +55,7 @@ class PaymentFacadeServiceTest {
 
         OrderItem item = OrderItem.of(1L, 2, 270, Money.wons(10000));
         Order mockOrder = mock(Order.class);
-        when(mockOrder.getTotalAmount()).thenReturn(BigDecimal.valueOf(20000));
+        when(mockOrder.getTotalAmount()).thenReturn(20000L);
         when(mockOrder.getItems()).thenReturn(List.of(item));
         when(orderService.getOrderForPayment("order-123")).thenReturn(mockOrder);
 
@@ -69,7 +69,7 @@ class PaymentFacadeServiceTest {
 
         // Then
         assertThat(result.orderId()).isEqualTo("order-123");
-        assertThat(result.amount()).isEqualTo(BigDecimal.valueOf(20000));
+        assertThat(result.amount()).isEqualTo(20000L);
         assertThat(result.method()).isEqualTo("BALANCE");
 
         verify(paymentService).process(command, mockOrder, mockPayment);

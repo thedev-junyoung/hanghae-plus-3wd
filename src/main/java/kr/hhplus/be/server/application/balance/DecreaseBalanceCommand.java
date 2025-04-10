@@ -6,10 +6,10 @@ import java.math.BigDecimal;
 
 public record DecreaseBalanceCommand(
         Long userId,
-        BigDecimal amount
+        long amount
 ) {
     public DecreaseBalanceCommand {
-        if (amount == null || amount.compareTo(BigDecimal.ZERO) <= 0) {
+        if (amount <= 0) {
             throw new IllegalArgumentException("감액 금액은 0보다 커야 합니다.");
         }
     }

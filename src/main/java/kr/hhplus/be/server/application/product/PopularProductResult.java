@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 public record PopularProductResult(
         Long id,
         String name,
-        BigDecimal price,
+        long price,
         int salesCount
 ) {
     public static PopularProductResult from(Product product, int salesCount) {

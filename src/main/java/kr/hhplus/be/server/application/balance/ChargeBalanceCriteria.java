@@ -4,6 +4,6 @@ import java.math.BigDecimal;
 
 public record ChargeBalanceCriteria(
         Long userId,
-        BigDecimal amount,
+        long amount,
         String reason
 ) {}

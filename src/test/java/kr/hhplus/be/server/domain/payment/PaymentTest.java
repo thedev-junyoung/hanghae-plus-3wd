@@ -17,7 +17,7 @@ class PaymentTest {
         Payment payment = Payment.initiate("order-001", Money.wons(10000), "BALANCE");
 
         assertThat(payment.getOrderId()).isEqualTo("order-001");
-        assertThat(payment.getAmount()).isEqualTo(BigDecimal.valueOf(10000));
+        assertThat(payment.getAmount()).isEqualTo(10000);
         assertThat(payment.getMethod()).isEqualTo("BALANCE");
         assertThat(payment.getStatus()).isEqualTo(PaymentStatus.INITIATED);
         assertThat(payment.getCreatedAt()).isNotNull();

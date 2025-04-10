@@ -25,7 +25,7 @@ class OrderTest {
         assertThat(order.getId()).isEqualTo("order-id");
         assertThat(order.getUserId()).isEqualTo(1L);
         assertThat(order.getItems()).hasSize(1);
-        assertThat(order.getTotalAmount()).isEqualTo(BigDecimal.valueOf(100000));
+        assertThat(order.getTotalAmount()).isEqualTo(100000);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CREATED);
         assertThat(order.getCreatedAt()).isNotNull();
     }

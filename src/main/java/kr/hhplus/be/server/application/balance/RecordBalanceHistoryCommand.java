@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 
 public record RecordBalanceHistoryCommand(
         Long userId,
-        BigDecimal amount,
+        long amount,
         BalanceChangeType type,
         String reason
 ) {}

@@ -49,7 +49,7 @@ class BalancePaymentProcessorTest {
 
         // ✅ BigDecimal 비교는 compareTo()로!
         verify(balanceService).decreaseBalance(eq(
-                new DecreaseBalanceCommand(100L, BigDecimal.valueOf(200000))
+                new DecreaseBalanceCommand(100L, 200000)
         ));
 
     }

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 public record BalanceResult(
         Long userId,
-        BigDecimal balance,
+        Long balance,
         LocalDateTime updatedAt
 ) {
     public static BalanceResult fromInfo(BalanceInfo info) {

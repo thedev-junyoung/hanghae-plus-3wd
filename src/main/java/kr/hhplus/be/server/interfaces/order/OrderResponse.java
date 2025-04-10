@@ -22,7 +22,7 @@ public class OrderResponse {
     private final List<OrderItemResponse> items;
 
     @Schema(description = "총 금액")
-    private final BigDecimal totalAmount;
+    private final long totalAmount;
 
     @Schema(description = "주문 상태")
     private final String status;
@@ -47,7 +47,7 @@ public class OrderResponse {
         private Long productId;
         private int quantity;
         private int size;
-        private BigDecimal price;
+        private long price;
 
         public static OrderItemResponse from(OrderResult.OrderItemResult item) {
             return new OrderItemResponse(

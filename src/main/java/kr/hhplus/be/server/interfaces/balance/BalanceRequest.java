@@ -17,5 +17,5 @@ public class BalanceRequest {
     @NotNull
     @Min(0)
     @Schema(description = "충전 금액", example = "50000")
-    private BigDecimal amount;
+    private long amount;
 }

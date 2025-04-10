@@ -35,13 +35,13 @@ class BalanceServiceTest {
         when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(existing));
         when(balanceRepository.save(eq(existing))).thenReturn(existing); // eq로 명시적 비교
 
-        ChargeBalanceCommand command = new ChargeBalanceCommand(100L, BigDecimal.valueOf(500));
+        ChargeBalanceCommand command = new ChargeBalanceCommand(100L, 500);
 
         // when
         BalanceInfo info = balanceService.charge(command);
 
         // then
-        assertThat(info.amount()).isEqualTo(BigDecimal.valueOf(1500));
+        assertThat(info.amount()).isEqualTo(1500L);
         verify(balanceRepository).save(existing);
     }
 
@@ -53,7 +53,7 @@ class BalanceServiceTest {
         when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(existing));
         when(balanceRepository.save(eq(existing))).thenReturn(existing);
 
-        DecreaseBalanceCommand command = new DecreaseBalanceCommand(100L, BigDecimal.valueOf(500));
+        DecreaseBalanceCommand command = new DecreaseBalanceCommand(100L, 500);
 
         // when
         boolean result = balanceService.decreaseBalance(command);
@@ -65,7 +65,7 @@ class BalanceServiceTest {
         verify(balanceRepository).save(captor.capture());
 
         Balance saved = captor.getValue();
-        assertThat(saved.getAmount()).isEqualTo(BigDecimal.valueOf(500)); // 1000 - 500 = 500
+        assertThat(saved.getAmount()).isEqualTo(500); // 1000 - 500 = 500
     }
 
     @Test
@@ -75,7 +75,7 @@ class BalanceServiceTest {
         Balance existing = Balance.createNew(1L, 100L, Money.wons(300));
         when(balanceRepository.findByUserId(100L)).thenReturn(Optional.of(existing));
 
-        DecreaseBalanceCommand command = new DecreaseBalanceCommand(100L, BigDecimal.valueOf(500));
+        DecreaseBalanceCommand command = new DecreaseBalanceCommand(100L, 500);
 
         // when & then
         assertThatThrownBy(() -> balanceService.decreaseBalance(command))

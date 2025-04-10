@@ -10,7 +10,7 @@ public record RequestPaymentCommand(
         Long userId,
         String method  // 예: "BALANCE", "CARD"
 ) {
-    public DecreaseBalanceCommand toDecreaseBalanceCommand(BigDecimal amount) {
+    public DecreaseBalanceCommand toDecreaseBalanceCommand(long amount) {
         return new DecreaseBalanceCommand(userId, amount);
     }
 }

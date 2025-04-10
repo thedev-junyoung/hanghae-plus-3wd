@@ -33,7 +33,7 @@ class PaymentServiceTest {
     void initiate_createsPayment() {
         // given
         String orderId = "order-1";
-        BigDecimal amount = BigDecimal.valueOf(10000);
+        long amount = 10000L;
         String method = "BALANCE";
 
         // when

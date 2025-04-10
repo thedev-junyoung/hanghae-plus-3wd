@@ -19,7 +19,7 @@ public class PaymentResponse {
     private final String orderId;
 
     @Schema(description = "결제 금액", example = "10000")
-    private final BigDecimal amount;
+    private final long amount;
 
     @Schema(description = "결제 수단", example = "CARD")
     private final String method;

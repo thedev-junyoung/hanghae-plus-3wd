@@ -42,7 +42,7 @@ class OrderServiceTest {
         assertThat(order).isNotNull();
         assertThat(order.getUserId()).isEqualTo(userId);
         assertThat(order.getItems()).hasSize(1);
-        assertThat(order.getTotalAmount()).isEqualTo(totalAmount.getValue());
+        assertThat(Money.wons(order.getTotalAmount())).isEqualTo(totalAmount);
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CREATED);
 
         verify(orderRepository).save(any(Order.class));

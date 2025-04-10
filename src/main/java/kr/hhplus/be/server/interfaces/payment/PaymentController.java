@@ -2,14 +2,10 @@ package kr.hhplus.be.server.interfaces.payment;
 
 import kr.hhplus.be.server.application.payment.*;
 import kr.hhplus.be.server.common.dto.CustomApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @RestController
 @RequiredArgsConstructor

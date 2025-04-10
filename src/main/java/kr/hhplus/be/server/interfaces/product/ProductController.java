@@ -3,14 +3,10 @@ package kr.hhplus.be.server.interfaces.product;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import kr.hhplus.be.server.application.product.*;
 import kr.hhplus.be.server.common.dto.CustomApiResponse;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController

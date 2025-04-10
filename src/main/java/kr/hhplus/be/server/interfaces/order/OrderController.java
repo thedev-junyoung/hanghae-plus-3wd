@@ -5,15 +5,11 @@ import kr.hhplus.be.server.application.order.CreateOrderCommand;
 import kr.hhplus.be.server.application.order.OrderFacadeService;
 import kr.hhplus.be.server.application.order.OrderResult;
 import kr.hhplus.be.server.common.dto.CustomApiResponse;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.math.BigDecimal;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

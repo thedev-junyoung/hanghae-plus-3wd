@@ -1,7 +1,6 @@
 package kr.hhplus.be.server.domain.product;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.common.exception.ErrorCode;
 import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.product.exception.*;
 import lombok.AccessLevel;

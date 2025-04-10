@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.application.payment;
 
-import kr.hhplus.be.server.domain.common.vo.Money;
+import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.payment.Payment;
 import kr.hhplus.be.server.domain.payment.PaymentRepository;
@@ -48,7 +48,7 @@ public class PaymentService {
         return paymentRepository.findByPgTransactionId(pgTransactionId)
                 .map(payment -> Payment.initiate(
                         payment.getOrderId(),
-                        Money.wons(payment.getAmount().value()),
+                        Money.wons(payment.getAmount()),
                         payment.getMethod()
                 ))
                 .orElseThrow(() -> new PaymentNotFoundException(pgTransactionId));

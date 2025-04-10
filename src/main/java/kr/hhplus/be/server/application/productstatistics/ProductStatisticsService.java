@@ -1,6 +1,6 @@
 package kr.hhplus.be.server.application.productstatistics;
 
-import kr.hhplus.be.server.domain.common.vo.Money;
+import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.productstatistics.ProductStatistics;
 import kr.hhplus.be.server.domain.productstatistics.ProductStatisticsRepository;
 import lombok.RequiredArgsConstructor;

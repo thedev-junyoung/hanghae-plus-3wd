@@ -1,12 +1,13 @@
 package kr.hhplus.be.server.domain.payment;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.common.vo.Money;
+import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.payment.exception.InvalidPaymentStateException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -22,8 +23,8 @@ public class Payment {
     @Column(nullable = false)
     private String orderId;
 
-    @Embedded
-    private Money amount;
+    @Column(nullable = false)
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -38,7 +39,7 @@ public class Payment {
     private Payment(String id, String orderId, Money amount, PaymentStatus status, String method, LocalDateTime createdAt) {
         this.id = id;
         this.orderId = orderId;
-        this.amount = amount;
+        this.amount = amount.value();
         this.status = status;
         this.method = method;
         this.createdAt = createdAt;

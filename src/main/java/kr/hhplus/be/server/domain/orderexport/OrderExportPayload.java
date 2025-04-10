@@ -36,7 +36,7 @@ public class OrderExportPayload {
                                 item.getPrice().value()
                         ))
                         .toList(),
-                order.getTotalAmount().value()
+                order.getTotalAmount()
         );
     }
 }

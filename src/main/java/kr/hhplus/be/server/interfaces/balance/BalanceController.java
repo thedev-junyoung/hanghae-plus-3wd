@@ -3,13 +3,11 @@ package kr.hhplus.be.server.interfaces.balance;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import kr.hhplus.be.server.application.balance.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import kr.hhplus.be.server.application.balance.BalanceUseCase;
-import kr.hhplus.be.server.application.balance.ChargeBalanceCommand;
-import kr.hhplus.be.server.application.balance.BalanceResult;
 import kr.hhplus.be.server.common.dto.CustomApiResponse;
 
 @RestController
@@ -19,21 +17,24 @@ import kr.hhplus.be.server.common.dto.CustomApiResponse;
 public class BalanceController implements BalanceAPI{
 
     private final BalanceUseCase balanceUseCase;
+    private final BalanceFacade balanceFacade;
 
     @PostMapping("/charge")
-    @Operation(summary = "잔액 충전", description = "사용자의 잔액을 충전합니다.")
     public ResponseEntity<CustomApiResponse<BalanceResponse>> charge(@Valid @RequestBody BalanceRequest request) {
-        ChargeBalanceCommand command = new ChargeBalanceCommand(
+        ChargeBalanceCriteria criteria = new ChargeBalanceCriteria(
                 request.getUserId(),
-                request.getAmount()
+                request.getAmount(),
+                "사용자 요청에 따른 충전" // 혹은 request.getReason() 받아서 넘겨도 됨
         );
 
-        BalanceResult result = balanceUseCase.charge(command);
+        BalanceResult result = balanceFacade.chargeAndRecord(criteria);
 
         return ResponseEntity.ok(CustomApiResponse.success(
                 new BalanceResponse(result.userId(), result.balance(), result.updatedAt())
         ));
     }
+
+
 
     @GetMapping("/{userId}")
     @Operation(summary = "잔액 조회", description = "사용자의 현재 잔액을 조회합니다.")

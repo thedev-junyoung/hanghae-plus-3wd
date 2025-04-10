@@ -6,7 +6,7 @@ import kr.hhplus.be.server.application.orderexport.OrderExportCommand;
 import kr.hhplus.be.server.application.orderexport.OrderExportService;
 import kr.hhplus.be.server.application.productstatistics.ProductStatisticsService;
 import kr.hhplus.be.server.application.productstatistics.RecordSalesCommand;
-import kr.hhplus.be.server.domain.common.vo.Money;
+import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.orderexport.OrderExportPayload;
 import kr.hhplus.be.server.domain.payment.ExternalPaymentGateway;
@@ -29,8 +29,7 @@ public class PaymentFacadeService implements PaymentUseCase {
     @Override
     public PaymentResult requestPayment(RequestPaymentCommand command) {
         Order order = orderService.getOrderForPayment(command.orderId());
-        Money amount = order.getTotalAmount();
-
+        Money amount = Money.wons(order.getTotalAmount());
         Payment payment = paymentService.initiate(command.orderId(), amount, command.method());
 
         // 실제 외부 결제 요청

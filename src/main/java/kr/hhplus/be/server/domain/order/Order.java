@@ -1,12 +1,13 @@
 package kr.hhplus.be.server.domain.order;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.common.vo.Money;
+import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.exception.InvalidOrderStateException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,8 +26,8 @@ public class Order {
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> items;
 
-    @Embedded
-    private Money totalAmount;
+    @Column(name = "total_amount", nullable = false)
+    private BigDecimal totalAmount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -40,7 +41,7 @@ public class Order {
         order.id = id;
         order.userId = userId;
         order.items = items;
-        order.totalAmount = totalAmount;
+        order.totalAmount = totalAmount.value(); // BigDecimal 값만 저장
         order.status = OrderStatus.CREATED;
         order.createdAt = LocalDateTime.now();
 

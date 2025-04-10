@@ -2,7 +2,7 @@ package kr.hhplus.be.server.domain.balance;
 
 import jakarta.persistence.*;
 import kr.hhplus.be.server.domain.balance.exception.NotEnoughBalanceException;
-import kr.hhplus.be.server.domain.common.vo.Money;
+import kr.hhplus.be.server.common.vo.Money;
 import lombok.*;
 
 import java.time.LocalDateTime;

@@ -17,7 +17,7 @@ public record PaymentResult(
         return new PaymentResult(
                 payment.getId(),
                 payment.getOrderId(),
-                payment.getAmount().value(),
+                payment.getAmount(),
                 payment.getMethod(),
                 payment.getStatus(),
                 payment.getCreatedAt()

@@ -1,9 +1,9 @@
 package kr.hhplus.be.server.domain.balance;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.common.vo.Money;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -21,8 +21,8 @@ public class BalanceHistory {
     @Column(nullable = false)
     private Long userId;
 
-    @Embedded
-    private Money amount;
+    @Column(nullable = false)
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -33,7 +33,7 @@ public class BalanceHistory {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public BalanceHistory(Long userId, Money amount, BalanceChangeType type, String reason, LocalDateTime createdAt) {
+    public BalanceHistory(Long userId, BigDecimal amount, BalanceChangeType type, String reason, LocalDateTime createdAt) {
         this.userId = userId;
         this.amount = amount;
         this.type = type;
@@ -41,7 +41,7 @@ public class BalanceHistory {
         this.createdAt = createdAt;
     }
 
-    public static BalanceHistory of(Long userId, Money amount, BalanceChangeType type, String reason) {
+    public static BalanceHistory of(Long userId, BigDecimal amount, BalanceChangeType type, String reason) {
         return new BalanceHistory(userId, amount, type, reason, LocalDateTime.now());
     }
 

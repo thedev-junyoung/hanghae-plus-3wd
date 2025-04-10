@@ -2,7 +2,7 @@ package kr.hhplus.be.server.application.order;
 
 import kr.hhplus.be.server.application.balance.BalanceService;
 import kr.hhplus.be.server.application.product.*;
-import kr.hhplus.be.server.domain.common.vo.Money;
+import kr.hhplus.be.server.common.vo.Money;
 import kr.hhplus.be.server.domain.order.Order;
 import kr.hhplus.be.server.domain.order.OrderItem;
 import kr.hhplus.be.server.domain.product.exception.InsufficientStockException;
@@ -60,7 +60,7 @@ class OrderFacadeServiceTest {
         when(orderService.createOrder(eq(100L), anyList(), eq(Money.wons(320000))))
                 .thenAnswer(invocation -> {
                     List<OrderItem> capturedItems = invocation.getArgument(1);
-                    return Order.create("order-id", 100L, capturedItems, Money.wons(320000));
+                    return Order.create("order-id", 100L, capturedItems, BigDecimal.valueOf(320000));
                 });
 
         // When

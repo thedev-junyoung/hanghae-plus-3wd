@@ -1,7 +1,7 @@
 package kr.hhplus.be.server.domain.productstatistics;
 
 import jakarta.persistence.*;
-import kr.hhplus.be.server.domain.common.vo.Money;
+import kr.hhplus.be.server.common.vo.Money;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

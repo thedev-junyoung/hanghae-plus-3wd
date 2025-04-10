@@ -25,7 +25,7 @@ public record OrderResult(
                 order.getId(),
                 order.getUserId(),
                 itemResults,
-                order.getTotalAmount().value(),
+                order.getTotalAmount(),
                 order.getStatus(),
                 order.getCreatedAt()
         );

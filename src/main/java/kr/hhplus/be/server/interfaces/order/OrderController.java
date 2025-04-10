@@ -21,7 +21,7 @@ public class OrderController implements OrderAPI {
     public ResponseEntity<CustomApiResponse<OrderResponse>> createOrder(@Valid @RequestBody OrderRequest request) {
         CreateOrderCommand command = request.toCommand();
         OrderResult result = orderFacadeService.createOrder(command);
-        return ResponseEntity.ok(CustomApiResponse.success(OrderRes/ponse.from(result)));
+        return ResponseEntity.ok(CustomApiResponse.success(OrderResponse.from(result)));
     }
 
 }

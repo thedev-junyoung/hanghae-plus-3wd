@@ -1,22 +1,16 @@
-package kr.hhplus.be.server.domain.common.vo;
+package kr.hhplus.be.server.common.vo;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.util.Objects;
 
 @Getter
-@Embeddable
 public class Money {
 
     @Column(nullable = false)
-    private BigDecimal value;
-
-    protected Money() {
-        // JPA 기본 생성자
-    }
+    private final BigDecimal value;
 
     private Money(BigDecimal value) {
         this.value = value;

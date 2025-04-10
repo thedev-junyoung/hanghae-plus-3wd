@@ -5,6 +5,8 @@ import kr.hhplus.be.server.common.vo.Money;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 import static org.assertj.core.api.Assertions.*;
 
 class BalanceTest {
@@ -15,7 +17,7 @@ class BalanceTest {
         Balance balance = Balance.createNew(1L, 100L, Money.wons(1000));
         balance.charge(Money.wons(500));
 
-        assertThat(balance.getAmount()).isEqualTo(Money.wons(1500));
+        assertThat(balance.getAmount()).isEqualTo(BigDecimal.valueOf(1500));
     }
 
     @Test
@@ -24,7 +26,7 @@ class BalanceTest {
         Balance balance = Balance.createNew(1L, 100L, Money.wons(1000));
         balance.decrease(Money.wons(300));
 
-        assertThat(balance.getAmount()).isEqualTo(Money.wons(700));
+        assertThat(balance.getAmount()).isEqualTo(BigDecimal.valueOf(700));
     }
 
     @Test

@@ -16,14 +16,14 @@ public class BalanceService implements BalanceUseCase {
     private final BalanceRepository balanceRepository;
 
     @Override
-    public BalanceResult charge(ChargeBalanceCommand command) {
+    public BalanceInfo charge(ChargeBalanceCommand command) {
         Balance balance = balanceRepository.findByUserId(command.userId())
                 .orElseThrow(() -> new BalanceNotFoundException(command.userId()));
 
         balance.charge(Money.wons(command.amount()));
 
         Balance updated = balanceRepository.save(balance);
-        return BalanceResult.from(balance);
+        return BalanceInfo.from(updated);
     }
 
     @Override
@@ -31,7 +31,7 @@ public class BalanceService implements BalanceUseCase {
         Balance balance = balanceRepository.findByUserId(userId)
                 .orElseThrow(() -> new BalanceNotFoundException(userId));
 
-        return BalanceResult.from(balance);
+        return BalanceResult.fromDomain(balance);
     }
 
     @Override

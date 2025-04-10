@@ -6,16 +6,22 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public record BalanceResult(
-        Long id,
         Long userId,
         BigDecimal balance,
         LocalDateTime updatedAt
 ) {
-    public static BalanceResult from(Balance balance) {
+    public static BalanceResult fromInfo(BalanceInfo info) {
         return new BalanceResult(
-                balance.getId(),
+                info.userId(),
+                info.amount(),
+                info.updatedAt()
+        );
+    }
+
+    public static BalanceResult fromDomain(Balance balance) {
+        return new BalanceResult(
                 balance.getUserId(),
-                balance.getAmount().value(),
+                balance.getAmount(), // Money 내부 값 꺼냄
                 balance.getUpdatedAt()
         );
     }

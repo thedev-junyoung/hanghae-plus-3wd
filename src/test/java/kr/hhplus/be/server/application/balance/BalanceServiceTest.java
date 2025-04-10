@@ -38,10 +38,10 @@ class BalanceServiceTest {
         ChargeBalanceCommand command = new ChargeBalanceCommand(100L, BigDecimal.valueOf(500));
 
         // when
-        BalanceResult result = balanceService.charge(command);
+        BalanceInfo info = balanceService.charge(command);
 
         // then
-        assertThat(result.balance()).isEqualTo(BigDecimal.valueOf(1500));
+        assertThat(info.amount()).isEqualTo(BigDecimal.valueOf(1500));
         verify(balanceRepository).save(existing);
     }
 
@@ -65,7 +65,7 @@ class BalanceServiceTest {
         verify(balanceRepository).save(captor.capture());
 
         Balance saved = captor.getValue();
-        assertThat(saved.getAmount()).isEqualTo(Money.wons(500)); // 1000 - 500 = 500
+        assertThat(saved.getAmount()).isEqualTo(BigDecimal.valueOf(500)); // 1000 - 500 = 500
     }
 
     @Test

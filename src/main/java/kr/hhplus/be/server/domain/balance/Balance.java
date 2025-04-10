@@ -5,6 +5,7 @@ import kr.hhplus.be.server.domain.balance.exception.NotEnoughBalanceException;
 import kr.hhplus.be.server.common.vo.Money;
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,7 +23,7 @@ public class Balance {
     private Long userId;
 
     @Embedded
-    private Money amount;
+    private BigDecimal amount;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -34,7 +35,7 @@ public class Balance {
         LocalDateTime now = LocalDateTime.now();
         this.id = id;
         this.userId = userId;
-        this.amount = amount;
+        this.amount = amount.getValue();
         this.createdAt = now;
         this.updatedAt = now;
     }
@@ -44,19 +45,22 @@ public class Balance {
     }
 
     public void charge(Money value) {
-        this.amount = this.amount.add(value);
+        Money current = Money.wons(amount);
+        Money charged = current.add(value);
+        this.amount = charged.value();
         this.updatedAt = LocalDateTime.now();
     }
 
     public void decrease(Money value) {
-        if (!amount.isGreaterThanOrEqual(value)) {
+        Money current = Money.wons(amount);
+        if (!current.isGreaterThanOrEqual(value)) {
             throw new NotEnoughBalanceException();
         }
-        this.amount = this.amount.subtract(value);
+        this.amount = current.subtract(value).value();
         this.updatedAt = LocalDateTime.now();
     }
 
     public boolean hasEnough(Money value) {
-        return this.amount.isGreaterThanOrEqual(value);
+        return Money.wons(amount).isGreaterThanOrEqual(value);
     }
 }

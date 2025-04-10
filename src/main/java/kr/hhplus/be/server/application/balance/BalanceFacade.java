@@ -13,7 +13,7 @@ public class BalanceFacade {
     private final BalanceHistoryUseCase historyUseCase;
 
     public BalanceResult chargeAndRecord(ChargeBalanceCriteria criteria) {
-        BalanceResult result = balanceUseCase.charge(
+        BalanceInfo info = balanceUseCase.charge(
                 new ChargeBalanceCommand(criteria.userId(), criteria.amount())
         );
 
@@ -26,8 +26,9 @@ public class BalanceFacade {
                 )
         );
 
-        return result;
+        return BalanceResult.fromInfo(info);
     }
+
 
 }
 

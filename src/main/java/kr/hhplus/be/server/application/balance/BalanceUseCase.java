@@ -4,7 +4,7 @@ public interface BalanceUseCase {
     /**
      * 사용자 잔액을 충전합니다.
      */
-    BalanceResult charge(ChargeBalanceCommand command);
+    BalanceInfo charge(ChargeBalanceCommand command);
 
     /**
      * 사용자의 현재 잔액을 조회합니다.

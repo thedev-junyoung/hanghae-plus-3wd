@@ -2,6 +2,7 @@ package kr.hhplus.be.server.domain.product;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import kr.hhplus.be.server.domain.product.exception.InsufficientStockException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,7 @@ public class ProductStock {
         this.updatedAt = LocalDateTime.now();
     }
 
-    public static ProductStock create(Long productId, int size, int stockQuantity) {
+    public static ProductStock of(Long productId, int size, int stockQuantity) {
         return new ProductStock(productId, size, stockQuantity);
     }
 
@@ -39,7 +40,7 @@ public class ProductStock {
 
     public void decreaseStock(int quantity) {
         if (stockQuantity < quantity) {
-            throw new IllegalStateException("재고 부족");
+            throw new InsufficientStockException();
         }
         this.stockQuantity -= quantity;
         this.updatedAt = LocalDateTime.now();

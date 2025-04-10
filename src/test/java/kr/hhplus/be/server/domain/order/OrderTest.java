@@ -5,6 +5,7 @@ import kr.hhplus.be.server.domain.order.exception.InvalidOrderStateException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -24,7 +25,7 @@ class OrderTest {
         assertThat(order.getId()).isEqualTo("order-id");
         assertThat(order.getUserId()).isEqualTo(1L);
         assertThat(order.getItems()).hasSize(1);
-        assertThat(order.getTotalAmount()).isEqualTo(Money.wons(100000));
+        assertThat(order.getTotalAmount()).isEqualTo(BigDecimal.valueOf(100000));
         assertThat(order.getStatus()).isEqualTo(OrderStatus.CREATED);
         assertThat(order.getCreatedAt()).isNotNull();
     }

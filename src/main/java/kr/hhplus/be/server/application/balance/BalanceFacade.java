@@ -4,7 +4,6 @@ import kr.hhplus.be.server.domain.balance.BalanceChangeType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor

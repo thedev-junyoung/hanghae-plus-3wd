@@ -16,6 +16,7 @@ import org.mockito.Captor;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,8 +51,8 @@ class OrderFacadeServiceTest {
         CreateOrderCommand.OrderItemCommand item2 = new CreateOrderCommand.OrderItemCommand(2L, 1, 280);
         CreateOrderCommand command = new CreateOrderCommand(100L, List.of(item1, item2));
 
-        ProductResult product1 = new ProductResult(1L, "Nike Air", BigDecimal.valueOf(100000), 10, null, null, null, null);
-        ProductResult product2 = new ProductResult(2L, "Adidas Ultra", BigDecimal.valueOf(120000), 5, null, null, null, null);
+        ProductResult product1 = new ProductResult(1L, "Nike Air", BigDecimal.valueOf(100000), LocalDate.now(),  null, null, null);
+        ProductResult product2 = new ProductResult(2L, "Adidas Ultra", BigDecimal.valueOf(120000), LocalDate.now(),  null, null, null);
 
         when(productService.getProductDetail(new GetProductDetailCommand(1L))).thenReturn(new ProductDetailResult(product1));
         when(productService.getProductDetail(new GetProductDetailCommand(2L))).thenReturn(new ProductDetailResult(product2));
@@ -60,7 +61,7 @@ class OrderFacadeServiceTest {
         when(orderService.createOrder(eq(100L), anyList(), eq(Money.wons(320000))))
                 .thenAnswer(invocation -> {
                     List<OrderItem> capturedItems = invocation.getArgument(1);
-                    return Order.create("order-id", 100L, capturedItems, BigDecimal.valueOf(320000));
+                    return Order.create("order-id", 100L, capturedItems, Money.wons(320000));
                 });
 
         // When
@@ -73,8 +74,9 @@ class OrderFacadeServiceTest {
         assertThat(result.items()).hasSize(2);
         assertThat(result.items()).extracting("productId").containsExactlyInAnyOrder(1L, 2L);
 
-        verify(productService).decreaseStock(new DecreaseStockCommand(1L, 260,2));
-        verify(productService).decreaseStock(new DecreaseStockCommand(2L, 260,1));
+        verify(productService).decreaseStock(new DecreaseStockCommand(1L, 270, 2));
+        verify(productService).decreaseStock(new DecreaseStockCommand(2L, 280, 1));
+
         verify(orderService).createOrder(eq(100L), orderItemsCaptor.capture(), eq(Money.wons(320000)));
 
         List<OrderItem> captured = orderItemsCaptor.getValue();
@@ -90,19 +92,22 @@ class OrderFacadeServiceTest {
         CreateOrderCommand.OrderItemCommand item = new CreateOrderCommand.OrderItemCommand(1L, 5, 270);
         CreateOrderCommand command = new CreateOrderCommand(100L, List.of(item));
 
-        ProductResult product = new ProductResult(1L, "Nike Air", BigDecimal.valueOf(100000), 2, null, null, null, null);
+        ProductResult product = new ProductResult(
+                1L, "Nike Air", BigDecimal.valueOf(100000), LocalDate.now(), null, null, null
+        );
+
         when(productService.getProductDetail(new GetProductDetailCommand(1L)))
                 .thenReturn(new ProductDetailResult(product));
 
         doThrow(new InsufficientStockException())
-                .when(productService).decreaseStock(new DecreaseStockCommand(1L, 260,5));
+                .when(productService).decreaseStock(new DecreaseStockCommand(1L, 270, 5));
 
         // When & Then
         assertThatThrownBy(() -> orderFacadeService.createOrder(command))
                 .isInstanceOf(InsufficientStockException.class);
 
         verify(productService).getProductDetail(new GetProductDetailCommand(1L));
-        verify(productService).decreaseStock(new DecreaseStockCommand(1L, 260,5));
+        verify(productService).decreaseStock(new DecreaseStockCommand(1L, 270, 5));
         verifyNoInteractions(orderService);
     }
 

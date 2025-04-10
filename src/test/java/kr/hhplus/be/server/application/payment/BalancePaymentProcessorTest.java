@@ -37,7 +37,7 @@ class BalancePaymentProcessorTest {
                 List.of(OrderItem.of(1L, 2, 270, Money.wons(100000))),
                 Money.wons(200000));
 
-        Payment payment = Payment.initiate(order.getId(), order.getTotalAmount(), "BALANCE");
+        Payment payment = Payment.initiate(order.getId(), Money.wons(order.getTotalAmount()), "BALANCE");
 
         when(balanceService.decreaseBalance(any(DecreaseBalanceCommand.class))).thenReturn(true);
 

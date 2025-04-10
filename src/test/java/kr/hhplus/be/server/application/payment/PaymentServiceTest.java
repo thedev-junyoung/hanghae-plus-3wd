@@ -9,6 +9,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.math.BigDecimal;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.Mockito.*;
@@ -31,11 +33,11 @@ class PaymentServiceTest {
     void initiate_createsPayment() {
         // given
         String orderId = "order-1";
-        Money amount = Money.wons(10000);
+        BigDecimal amount = BigDecimal.valueOf(10000);
         String method = "BALANCE";
 
         // when
-        Payment payment = paymentService.initiate(orderId, amount, method);
+        Payment payment = paymentService.initiate(orderId, Money.wons(amount), method);
 
         // then
         assertThat(payment).isNotNull();

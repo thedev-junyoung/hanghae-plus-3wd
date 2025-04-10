@@ -60,6 +60,5 @@ public class ProductStock {
             return currentStock >= requestQuantity;
         }
 
-        // 사이즈별 관리 - 외부에서 사이즈 파라미터로 관리됨 (도메인 설계로 분리되어 있음)
     }
 }

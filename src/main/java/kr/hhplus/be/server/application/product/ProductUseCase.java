@@ -6,7 +6,7 @@ import kr.hhplus.be.server.domain.product.Product;
 public interface ProductUseCase {
 
     /**
-     * 상품 목록을 조회합니다.
+     * 페이징된 상품 리스트를 조회한다. 재고 정보 포함.
      */
     ProductListResult getProductList(GetProductListCommand command);
 
@@ -20,7 +20,7 @@ public interface ProductUseCase {
     boolean decreaseStock(DecreaseStockCommand command);
 
     /**
-     * tjk
+     *
      */
     Product findProduct(Long productId); // Info 생성을 위한 raw entity
 }

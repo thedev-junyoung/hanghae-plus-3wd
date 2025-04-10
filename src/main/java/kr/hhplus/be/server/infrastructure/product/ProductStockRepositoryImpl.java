@@ -17,4 +17,9 @@ public class ProductStockRepositoryImpl implements ProductStockRepository {
     public ProductStock save(ProductStock stock) {
         return null;
     }
+
+    @Override
+    public Optional<ProductStock> findByProductId(Long id) {
+        return Optional.empty();
+    }
 }

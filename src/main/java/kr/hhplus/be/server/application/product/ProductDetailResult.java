@@ -1,13 +1,11 @@
 package kr.hhplus.be.server.application.product;
 
-import kr.hhplus.be.server.domain.product.Product;
+public record ProductDetailResult(ProductInfo product) {
+    public static ProductDetailResult from(ProductInfo info) {
+        return new ProductDetailResult(info);
+    }
 
-import java.util.List;
-
-public record ProductDetailResult(
-        ProductResult product
-) {
-    public static ProductDetailResult from(Product product) {
-        return new ProductDetailResult(ProductResult.from(product));
+    public static ProductDetailResult fromDomain(kr.hhplus.be.server.domain.product.Product product, int stock) {
+        return from(ProductInfo.from(product, stock));
     }
 }

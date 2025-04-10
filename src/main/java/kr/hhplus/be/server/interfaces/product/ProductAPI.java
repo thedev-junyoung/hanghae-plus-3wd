@@ -64,5 +64,11 @@ public interface ProductAPI {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
     @GetMapping("/popular")
-    ResponseEntity<CustomApiResponse<List<ProductResponse.PopularProductResponse>>> getPopularProducts();
+    ResponseEntity<CustomApiResponse<List<ProductResponse.PopularProductResponse>>> getPopularProducts(
+            @Parameter(description = "조회 기간 (일)", example = "3")
+            @RequestParam(required = false) Integer days,
+
+            @Parameter(description = "조회 개수", example = "5")
+            @RequestParam(required = false) Integer limit
+    );
 }

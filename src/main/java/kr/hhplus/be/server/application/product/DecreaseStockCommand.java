@@ -5,5 +5,7 @@ public record DecreaseStockCommand(
         int size,
         int quantity
 ) {
-
+    public static DecreaseStockCommand of(Long productId, int size, int quantity) {
+        return new DecreaseStockCommand(productId, size, quantity);
+    }
 }

@@ -8,6 +8,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -22,7 +24,7 @@ class ProductServiceTest {
     @Mock
     ProductRepository productRepository;
     @Mock
-    ProductStockRepository productStockRepository; // ✅ 추가
+    ProductStockRepository productStockRepository;
 
     @InjectMocks
     ProductService productService;
@@ -31,8 +33,14 @@ class ProductServiceTest {
     @DisplayName("상품 목록을 조회할 수 있다")
     void getProductList_success() {
         // given
-        Product product = Product.create( "Jordan 1", "Nike", Money.wons(200_000),LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
-        when(productRepository.findAll()).thenReturn(List.of(product));
+        Product product = Product.create("Jordan 1", "Nike", Money.wons(200_000),
+                LocalDate.of(2024, 1, 1), "image.jpg", "best seller");
+
+        when(productRepository.findAll(any(PageRequest.class)))
+                .thenReturn(new PageImpl<>(List.of(product)));
+
+        when(productStockRepository.findByProductId(product.getId()))
+                .thenReturn(Optional.of(ProductStock.of(product.getId(), 270, 5)));
 
         // when
         ProductListResult result = productService.getProductList(new GetProductListCommand(0, 10, null));
@@ -41,6 +49,8 @@ class ProductServiceTest {
         assertThat(result.products()).hasSize(1);
         assertThat(result.products().get(0).name()).isEqualTo("Jordan 1");
     }
+
+
 
     @Test
     @DisplayName("상품 상세 조회 성공")

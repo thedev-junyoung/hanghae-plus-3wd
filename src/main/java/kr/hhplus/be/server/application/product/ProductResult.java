@@ -10,19 +10,19 @@ public record ProductResult(
         String name,
         Long price,
         LocalDate releaseDate,
-        String imageUrl,
-        LocalDateTime createdAt,
-        LocalDateTime updatedAt
+        String description,
+        String brand,
+        int stockQuantity
 ) {
-    public static ProductResult from(Product product) {
+    public static ProductResult from(Product product, int stockQuantity) {
         return new ProductResult(
                 product.getId(),
                 product.getName(),
                 product.getPrice(),
                 product.getReleaseDate(),
-                product.getImageUrl(),
-                product.getCreatedAt(),
-                product.getUpdatedAt()
+                product.getDescription(),
+                product.getBrand(),
+                stockQuantity
         );
     }
 }

@@ -29,9 +29,9 @@ public interface BalanceAPI {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
     @PostMapping("/charge")
-    ResponseEntity<CustomApiResponse<BalanceController.Response>> charge(
+    ResponseEntity<CustomApiResponse<BalanceResponse>> charge(
             @Parameter(description = "잔액 충전 요청", required = true)
-            @Valid @RequestBody BalanceController.Request request
+            @Valid @RequestBody BalanceRequest request
     );
 
     @Operation(summary = "잔액 조회", description = "사용자의 현재 잔액을 조회합니다.")
@@ -42,7 +42,7 @@ public interface BalanceAPI {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
     @GetMapping("/{userId}")
-    ResponseEntity<CustomApiResponse<BalanceController.Response>> getBalance(
+    ResponseEntity<CustomApiResponse<BalanceResponse>> getBalance(
             @Parameter(description = "사용자 ID", example = "12345", required = true)
             @PathVariable Long userId
     );

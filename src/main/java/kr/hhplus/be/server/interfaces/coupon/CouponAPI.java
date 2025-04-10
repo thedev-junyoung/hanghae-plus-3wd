@@ -29,11 +29,11 @@ public interface CouponAPI {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     required = true,
                     description = "발급받을 쿠폰 정보",
-                    content = @Content(schema = @Schema(implementation = CouponController.Request.class))
+                    content = @Content(schema = @Schema(implementation = CouponResponse.class))
             ),
             responses = {
                     @ApiResponse(responseCode = "200", description = "쿠폰 발급 성공",
-                            content = @Content(schema = @Schema(implementation = CouponController.Response.class))),
+                            content = @Content(schema = @Schema(implementation = CouponResponse.class))),
                     @ApiResponse(responseCode = "404", description = "쿠폰이 존재하지 않거나 만료됨",
                             content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
                     @ApiResponse(responseCode = "409", description = "이미 발급받은 쿠폰",
@@ -43,8 +43,9 @@ public interface CouponAPI {
             }
     )
     @PostMapping("/limited-issue")
-    ResponseEntity<CustomApiResponse<CouponController.Response>> limitedIssueCoupon(
-            @Valid @RequestBody CouponController.Request request
+    ResponseEntity<CustomApiResponse<CouponResponse>> limitedIssueCoupon(
+            @Valid @RequestBody CouponRequest request
     );
+
 }
 

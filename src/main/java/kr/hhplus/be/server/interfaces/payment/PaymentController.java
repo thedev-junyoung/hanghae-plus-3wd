@@ -18,54 +18,16 @@ public class PaymentController implements PaymentAPI {
     private final PaymentFacadeService paymentFacadeService;
 
     @Override
-    public ResponseEntity<CustomApiResponse<Response.PaymentResponse>> requestPayment(Request.RequestPayment request) {
+    public ResponseEntity<CustomApiResponse<PaymentResponse>> requestPayment(PaymentRequest request) {
         RequestPaymentCommand command = request.toCommand();
         PaymentResult result = paymentFacadeService.requestPayment(command);
-        return ResponseEntity.ok(CustomApiResponse.success(Response.PaymentResponse.from(result)));
+        return ResponseEntity.ok(CustomApiResponse.success(PaymentResponse.from(result)));
     }
+
 
     @Override
-    public ResponseEntity<CustomApiResponse<Response.PaymentResponse>> confirmPayment(String pgTransactionId) {
+    public ResponseEntity<CustomApiResponse<PaymentResponse>> confirmPayment(String pgTransactionId) {
         PaymentResult result = paymentFacadeService.confirmPayment(new ConfirmPaymentCommand(pgTransactionId));
-        return ResponseEntity.ok(CustomApiResponse.success(Response.PaymentResponse.from(result)));
-    }
-
-    // ===== NESTED DTO =====
-    public static class Request {
-        @Getter
-        @AllArgsConstructor
-        public static class RequestPayment {
-            private String orderId;
-            private Long userId;
-            private String method;
-
-            public RequestPaymentCommand toCommand() {
-                return new RequestPaymentCommand(orderId, userId, method);
-            }
-        }
-    }
-
-    public static class Response {
-        @Getter
-        @AllArgsConstructor
-        public static class PaymentResponse {
-            private String paymentId;
-            private String orderId;
-            private BigDecimal amount;
-            private String method;
-            private String status;
-            private LocalDateTime createdAt;
-
-            public static PaymentResponse from(PaymentResult result) {
-                return new PaymentResponse(
-                        result.paymentId(),
-                        result.orderId(),
-                        result.amount(),
-                        result.method(),
-                        result.status().name(),
-                        result.createdAt()
-                );
-            }
-        }
+        return ResponseEntity.ok(CustomApiResponse.success(PaymentResponse.from(result)));
     }
 }

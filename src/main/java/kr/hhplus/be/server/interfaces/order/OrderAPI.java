@@ -20,7 +20,7 @@ public interface OrderAPI {
     @Operation(summary = "주문 생성", description = "상품 주문을 생성합니다. 결제는 별도로 처리됩니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = @Content(schema = @Schema(implementation = OrderController.Response.OrderResponse.class))),
+                    content = @Content(schema = @Schema(implementation = OrderResponse.class))),
             @ApiResponse(responseCode = "400", description = "잘못된 요청",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
             @ApiResponse(responseCode = "404", description = "사용자 또는 상품 없음",
@@ -33,9 +33,9 @@ public interface OrderAPI {
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
     @PostMapping
-    ResponseEntity<CustomApiResponse<OrderController.Response.OrderResponse>> createOrder(
+    ResponseEntity<CustomApiResponse<OrderResponse>> createOrder(
             @Parameter(description = "주문 생성 요청", required = true)
-            @Valid @RequestBody OrderController.Request.CreateOrderRequest request
+            @Valid @RequestBody OrderRequest request
     );
 
 }

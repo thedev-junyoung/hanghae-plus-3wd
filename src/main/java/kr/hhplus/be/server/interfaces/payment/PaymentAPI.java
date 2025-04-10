@@ -18,20 +18,20 @@ public interface PaymentAPI {
     @Operation(summary = "결제 요청", description = "주문에 대한 결제를 요청합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = @Content(schema = @Schema(implementation = PaymentController.Response.PaymentResponse.class))),
+                    content = @Content(schema = @Schema(implementation = PaymentResponse.class))),
             @ApiResponse(responseCode = "422", description = "잔액 부족",
                     content = @Content(schema = @Schema(implementation = kr.hhplus.be.server.common.exception.ApiErrorResponse.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(implementation = kr.hhplus.be.server.common.exception.ApiErrorResponse.class)))
     })
     @PostMapping
-    ResponseEntity<CustomApiResponse<PaymentController.Response.PaymentResponse>> requestPayment(
-            @Valid @RequestBody PaymentController.Request.RequestPayment request
+    ResponseEntity<CustomApiResponse<PaymentResponse>> requestPayment(
+            @Valid @RequestBody PaymentRequest request
     );
 
     @Operation(summary = "결제 확인", description = "PG사 트랜잭션 ID를 기반으로 결제를 확인합니다.")
     @PostMapping("/confirm")
-    ResponseEntity<CustomApiResponse<PaymentController.Response.PaymentResponse>> confirmPayment(
+    ResponseEntity<CustomApiResponse<PaymentResponse>> confirmPayment(
             @RequestParam String pgTransactionId
     );
 }

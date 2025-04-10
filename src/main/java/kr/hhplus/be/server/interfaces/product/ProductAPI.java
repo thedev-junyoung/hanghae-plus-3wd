@@ -25,12 +25,12 @@ public interface ProductAPI {
     @Operation(summary = "상품 목록 조회", description = "전체 상품 목록을 페이징하여 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = @Content(schema = @Schema(implementation = ProductController.Response.ProductListResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ProductResponse.ProductListResponse.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
     @GetMapping
-    ResponseEntity<CustomApiResponse<ProductController.Response.ProductListResponse>> getProducts(
+    ResponseEntity<CustomApiResponse<ProductResponse.ProductListResponse>> getProducts(
             @Parameter(description = "페이지 번호 (0부터 시작)", example = "0")
             @RequestParam(defaultValue = "0") int page,
 
@@ -44,14 +44,14 @@ public interface ProductAPI {
     @Operation(summary = "상품 상세 조회", description = "특정 상품의 상세 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = @Content(schema = @Schema(implementation = ProductController.Response.ProductDetailResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ProductResponse.ProductDetailResponse.class))),
             @ApiResponse(responseCode = "404", description = "상품 없음",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
     @GetMapping("/{productId}")
-    ResponseEntity<CustomApiResponse<ProductController.Response.ProductDetailResponse>> getProduct(
+    ResponseEntity<CustomApiResponse<ProductResponse.ProductDetailResponse>> getProduct(
             @Parameter(description = "상품 ID", example = "1001")
             @PathVariable Long productId
     );
@@ -59,10 +59,10 @@ public interface ProductAPI {
     @Operation(summary = "인기 판매 상품 조회", description = "최근 3일간 판매량이 높은 상위 5개 스니커즈 상품 정보를 조회합니다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "성공",
-                    content = @Content(schema = @Schema(implementation = ProductController.Response.PopularProductResponse.class))),
+                    content = @Content(schema = @Schema(implementation = ProductResponse.PopularProductResponse.class))),
             @ApiResponse(responseCode = "500", description = "서버 오류",
                     content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
     })
     @GetMapping("/popular")
-    ResponseEntity<CustomApiResponse<List<ProductController.Response.PopularProductResponse>>> getPopularProducts();
+    ResponseEntity<CustomApiResponse<List<ProductResponse.PopularProductResponse>>> getPopularProducts();
 }

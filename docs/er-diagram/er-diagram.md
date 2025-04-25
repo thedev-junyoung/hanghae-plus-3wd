@@ -1,5 +1,4 @@
 # E-R 다이어그램
-
 ```mermaid
 erDiagram
     USERS ||--o{ ORDERS : places
@@ -7,146 +6,159 @@ erDiagram
     USERS ||--o{ USER_COUPONS : owns
     PRODUCTS ||--o{ ORDER_ITEMS : includes
     ORDERS ||--o{ ORDER_ITEMS : contains
+    ORDERS ||--|| PAYMENTS : paid_by
+    ORDERS ||--o{ ORDER_EVENTS : emits
+    ORDERS ||--o{ OUTBOX_EVENTS : emits
     COUPONS ||--o{ USER_COUPONS : issued_as
     USER_COUPONS ||--o| ORDERS : applied_to
-    ORDERS ||--o{ ORDER_EVENTS : emits
-    ORDERS ||--|| PAYMENTS : paid_by
-    ORDERS }|--|| ORDER_STATUS : has
-    
+    USER_COUPONS ||--o{ COUPON_USAGE_HISTORY : uses
+    PRODUCTS ||--o{ PRODUCT_STOCKS : has
+    BALANCES ||--o{ BALANCE_HISTORY : tracks
+    ORDERS ||--o{ ORDER_HISTORY : status_changes
+
     USERS {
         bigint id PK "사용자 ID"
-        varchar name "사용자 이름"
+        varchar name "이름"
         varchar email "이메일 주소"
-        varchar role "역할: USER, SELLER, ADMIN"
-        varchar phone_number "연락처"
-        varchar business_number "사업자 등록번호 (SELLER 전용)"
-        varchar admin_code "관리자 식별 코드 (ADMIN 전용)"
-        text description "소개글 (SELLER/ADMIN 전용)"
+    }
+
+    BALANCES {
+        bigint id PK "잔액 ID"
+        bigint user_id FK "유저 참조"
+        decimal amount "보유 잔액"
         timestamp created_at "생성일"
         timestamp updated_at "수정일"
     }
-    BALANCES {
+    BALANCE_HISTORY {
         bigint id PK
-        bigint user_id FK "유저 참조"
-        decimal amount "보유 잔액 - 결제에 사용"
-        bigint version "낙관적 락용 버전 - 동시성 제어"
+        bigint user_id FK
+        decimal amount
+        varchar type "CHARGE, DEDUCT, REFUND 등"
+        varchar reason "결제, 충전 등 상세 사유"
         timestamp created_at
-        timestamp updated_at
     }
-
     PRODUCTS {
-        bigint id PK
+        bigint id PK "상품 ID"
         varchar name "상품명"
-        decimal price "상품 가격"
-        int stock_quantity "남은 재고 - 동시 주문 시 중요"
-        bigint version "낙관적 락 - 재고 동시성 제어"
-        timestamp created_at
+        varchar brand "브랜드명"
+        decimal price "가격"
+        int size "사이즈"
+        int stock "재고 수량"
+        date release_date "출시일"
+        varchar image_url "이미지 URL"
+        varchar description "상품 설명"
+        timestamp created_at "생성일"
+        timestamp updated_at "수정일"
+    }
+    PRODUCT_STOCKS {
+        bigint id PK
+        bigint product_id FK
+        int size
+        int stock_quantity
         timestamp updated_at
     }
-
-    COUPONS {
-        bigint id PK
-        varchar code "쿠폰 코드"
-        varchar type "할인 타입 (PERCENTAGE, FIXED)"
-        int discount_rate "할인율 / 정액 금액"
-        int total_quantity "전체 발급 가능 수량"
-        int remaining_quantity "남은 수량"
-        timestamp valid_from "유효 시작일"
-        timestamp valid_until "유효 종료일"
-        bigint created_by FK "쿠폰 발행자 (관리자/판매자)"
-        timestamp created_at
-    }
-
-    USER_COUPONS {
-        bigint id PK
-        bigint user_id FK "사용자 참조"
-        bigint coupon_id FK "쿠폰 참조"
-        boolean is_used "사용 여부 - 중복 사용 방지"
-        timestamp expiry_date "만료일"
-        bigint version "낙관적 락 - 동시 사용 제어"
-        timestamp created_at
-        timestamp updated_at
-    }
-
     ORDERS {
-        bigint id PK
+        varchar id PK "주문 ID"
         bigint user_id FK "주문 사용자"
-        bigint user_coupon_id FK "적용된 쿠폰"
-        decimal total_amount "주문 총액"
-        decimal discount_amount "할인 금액"
-        decimal final_amount "최종 결제 금액"
-        varchar status "주문 상태: CREATED/CONFIRMED/CANCELLED/DELIVERED"
-        timestamp order_date "주문일시"
-        timestamp created_at
-        timestamp updated_at
+        bigint user_coupon_id FK "적용된 유저 쿠폰"
+        decimal total_amount "총 주문 금액"
+        varchar status "주문 상태"
+        timestamp created_at "생성일"
     }
-
-    ORDER_ITEMS {
+    ORDER_HISTORY {
         bigint id PK
-        bigint order_id FK "주문 참조"
-        bigint product_id FK "상품 참조"
-        int quantity "주문 수량"
-        decimal price "주문 당시 가격"
-        timestamp created_at
-        timestamp updated_at
+        varchar order_id FK
+        varchar status
+        text memo
+        timestamp changed_at
     }
-
-    PRODUCT_STATISTICS {
-        bigint id PK
-        bigint product_id FK "상품 참조"
-        date stat_date "통계 일자"
-        int sales_count "판매 수량 - 인기 상품 산출용"
-        decimal sales_amount "판매 금액"
-        timestamp created_at
-        timestamp updated_at
-    }
-
     ORDER_EVENTS {
-        bigint id PK
-        bigint order_id FK "주문 참조"
-        varchar event_type "이벤트 유형: ORDER_CREATED/PAYMENT_COMPLETED"
-        text event_payload "이벤트 데이터 JSON"
-        varchar status "이벤트 상태: PENDING/SENT/FAILED"
+        uuid id PK "이벤트 ID"
+        varchar aggregate_type "집계 타입"
+        varchar event_type "이벤트 유형"
+        text payload "이벤트 데이터 (JSON)"
+        varchar status "이벤트 상태"
         int retry_count "재시도 횟수"
-        timestamp last_attempted_at "마지막 시도 시간"
-        timestamp created_at
-        timestamp updated_at
+        timestamp created_at "생성일"
+        timestamp last_attempted_at "마지막 시도"
+    }
+    ORDER_ITEMS {
+        bigint id PK "주문 항목 ID"
+        varchar order_id FK "주문 참조"
+        bigint product_id FK "상품 참조"
+        int quantity "수량"
+        int size "사이즈"
+        decimal price "주문 당시 가격"
+        timestamp created_at "생성일"
     }
 
     PAYMENTS {
-        bigint id PK
-        bigint order_id FK "주문 참조"
+        varchar id PK "결제 ID"
+        varchar order_id FK "주문 ID 참조"
         decimal amount "결제 금액"
-        varchar status "결제 상태: INITIATED/PENDING/SUCCESS/FAILURE/CANCELLED"
-        varchar pg_transaction_id "외부 결제 시스템 트랜잭션 ID"
-        varchar method "결제 수단 (BALANCE/CARD)"
+        varchar status "결제 상태"
+        varchar method "결제 수단"
+        timestamp created_at "결제일"
+    }
+
+    ORDER_EVENTS {
+        uuid id PK "이벤트 ID"
+        varchar aggregate_type "집계 타입"
+        varchar event_type "이벤트 유형"
+        text payload "이벤트 데이터 (JSON)"
+        varchar status "이벤트 상태"
         int retry_count "재시도 횟수"
-        text fail_reason "실패 사유"
-        timestamp created_at
-        timestamp updated_at
+        timestamp created_at "생성일"
+        timestamp last_attempted_at "마지막 시도"
     }
 
-    FAILED_EVENTS {
-        bigint id PK
-        varchar event_type "실패한 이벤트 유형"
-        text event_data "이벤트 데이터"
+    PRODUCT_STATISTICS {
+        bigint product_id PK "상품 ID"
+        date stat_date PK "통계 날짜"
+        int sales_count "판매 수량"
+        decimal sales_amount "판매 금액"
+    }
+
+    COUPONS {
+        bigint id PK "쿠폰 ID"
+        varchar code "쿠폰 코드"
+        varchar type "할인 타입"
+        int discount_rate "할인율 또는 금액"
+        int total_quantity "전체 발급 수량"
+        int remaining_quantity "남은 수량"
+        timestamp valid_from "유효 시작일"
+        timestamp valid_until "유효 종료일"
+        bigint created_by FK "발급자 ID"
+        timestamp created_at "생성일"
+    }
+
+    USER_COUPONS {
+        bigint id PK "유저 쿠폰 ID"
+        bigint user_id FK "사용자 ID"
+        bigint coupon_id FK "쿠폰 ID"
+        boolean is_used "사용 여부"
+        timestamp expiry_date "만료일"
+%%        bigint version "버전 (동시성 제어)"
+        timestamp created_at "생성일"
+        timestamp updated_at "수정일"
+    }
+
+    COUPON_USAGE_HISTORY {
+        bigint id PK "이력 ID"
+        bigint user_coupon_id FK "사용된 유저 쿠폰"
+        varchar action "사용/취소"
+        timestamp action_time "사용 시각"
+    }
+
+    OUTBOX_EVENTS {
+        uuid id PK "이벤트 ID"
+        varchar aggregate_type "예: ORDER, PAYMENT"
+        varchar aggregate_id "연관된 엔티티 ID"
+        varchar event_type "이벤트 종류 (예: PAYMENT_COMPLETED)"
+        text payload "직렬화된 JSON"
+        varchar status "상태 (예: PENDING, SENT)"
         int retry_count "재시도 횟수"
-        timestamp last_retry_time "마지막 재시도 시간"
-        varchar status "상태: PENDING/RETRYING/DEAD"
-        timestamp created_at
-        timestamp updated_at
-    }
-
-    DISTRIBUTED_LOCKS {
-        varchar lock_key PK "락 키 - 리소스 식별자"
-        varchar owner "락 소유자 - 인스턴스 ID"
-        timestamp expiry_time "락 만료 시간"
-        timestamp created_at
-    }
-
-    ORDER_STATUS {
-        varchar status PK "상태 코드"
-        varchar description "상태 설명"
+        timestamp created_at "생성일"
+        timestamp last_attempted_at "마지막 시도 시간"
     }
 ```
-
